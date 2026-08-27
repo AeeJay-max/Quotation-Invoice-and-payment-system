@@ -67,7 +67,22 @@ class InvoiceController extends Controller
         foreach ($invoice->items as $item) {
             $total = $total + ($item->quantity * $item->unit_price);
         }
-        return view('modules.invoice.view-invoice')->with(['left' => $left, 'templates' => $templates, 'invoice' => $invoice, 'total_price' => $total, 'settings' => $settings]);
+        // Calculate verified payment totals from DB (never trust cached invoice columns alone)
+        $verifiedPaid = \App\Models\Payment::where('invoice_id', $invoice->id)
+            ->where('status', 'verified')
+            ->sum('amount_verified');
+        $outstandingBalance = max(0, $invoice->total - $verifiedPaid);
+
+        return view('modules.invoice.view-invoice')->with([
+            'left'               => $left,
+            'templates'          => $templates,
+            'invoice'            => $invoice,
+            'total_price'        => $total,
+            'settings'           => $settings,
+            'verified_paid'      => $verifiedPaid,
+            'outstanding_balance'=> $outstandingBalance,
+        ]);
+
     }
 
     //create invoice

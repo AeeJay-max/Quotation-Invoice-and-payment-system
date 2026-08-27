@@ -28,6 +28,12 @@
                             <a href="/quotation?status=pending" class="btn btn-outline-warning m-1"><i class="fas fa-file-signature mr-1"></i> Review Quotations</a>
                             <a href="{{ route('admin.bookings.index') }}" class="btn btn-outline-success m-1"><i class="fas fa-file-contract mr-1"></i> Manage Bookings</a>
                             <a href="/invoice" class="btn btn-outline-info m-1"><i class="fas fa-money-check-alt mr-1"></i> View Invoices</a>
+                            <a href="{{ route('admin.payments.index') }}" class="btn btn-outline-danger m-1">
+                                <i class="fas fa-money-check-alt mr-1"></i> Payment Verifications
+                                @if($pendingPaymentsCount > 0)
+                                    <span class="badge badge-danger ml-1">{{ $pendingPaymentsCount }}</span>
+                                @endif
+                            </a>
                             <a href="{{ route('admin.attendees.index') }}" class="btn btn-outline-secondary m-1"><i class="fas fa-users mr-1"></i> Manage Attendees</a>
                             <a href="{{ route('admin.badges.index') }}" class="btn btn-outline-dark m-1"><i class="fas fa-id-badge mr-1"></i> Manage Badges</a>
                         </div>
@@ -95,10 +101,18 @@
             <h5 class="mb-3 font-weight-bold mt-4">Financial Statistics</h5>
             <div class="row">
                 <div class="col-lg-3 col-6">
-                    <div class="small-box bg-warning">
-                        <div class="inner"><h3>{{ $pendingPaymentsCount }}</h3><p>Pending Verifications</p></div>
-                        <div class="icon"><i class="fas fa-money-check"></i></div>
-                    </div>
+                    <a href="{{ route('admin.payments.index') }}" style="text-decoration:none;">
+                        <div class="small-box {{ $pendingPaymentsCount > 0 ? 'bg-danger' : 'bg-secondary' }}">
+                            <div class="inner">
+                                <h3>{{ $pendingPaymentsCount }}</h3>
+                                <p>Payments Pending Verification</p>
+                            </div>
+                            <div class="icon"><i class="fas fa-money-check-alt"></i></div>
+                            <span class="small-box-footer">
+                                {{ $pendingPaymentsCount > 0 ? 'Click to review →' : 'All verified ✓' }}
+                            </span>
+                        </div>
+                    </a>
                 </div>
                 <div class="col-lg-3 col-6">
                     <div class="small-box bg-info">

@@ -60,6 +60,21 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('admin.payments.index') }}" class="nav-link">
+                        <i class="fas fa-money-check-alt nav-icon text-warning"></i>
+                        <p>
+                            Payment Verifications
+                            @php
+                                $pendingPayCount = \App\Models\Payment::whereIn('status',['submitted','pending'])->count();
+                            @endphp
+                            @if($pendingPayCount > 0)
+                                <span class="badge badge-warning right">{{ $pendingPayCount }}</span>
+                            @endif
+                        </p>
+                    </a>
+                </li>
+
                 <li class="nav-header font-weight-bold text-muted">GENERAL SYSTEM</li>
 
                 {{--CLIENTS--}}

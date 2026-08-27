@@ -149,8 +149,11 @@ Route::group([], function () {
             Route::post('badges/{id}/status', [\App\Http\Controllers\BadgeController::class, 'updateStatus'])->name('badges.status');
 
             // Admin Payments
+            Route::get('payments', [\App\Http\Controllers\PaymentController::class, 'adminPayments'])->name('payments.index');
+            Route::get('payments/{id}', [\App\Http\Controllers\PaymentController::class, 'adminPaymentShow'])->name('payments.show');
             Route::post('payments/{id}/verify', [\App\Http\Controllers\PaymentController::class, 'adminVerifyPayment'])->name('payments.verify');
             Route::post('payments/{id}/reject', [\App\Http\Controllers\PaymentController::class, 'adminRejectPayment'])->name('payments.reject');
+            Route::get('payments/{id}/proof', [\App\Http\Controllers\PaymentController::class, 'adminServeProof'])->name('payments.proof');
         });
     });
 
@@ -168,6 +171,7 @@ Route::group([], function () {
             Route::get('invoices/{id}', [\App\Http\Controllers\CustomerPortalController::class, 'showInvoice'])->name('invoices.show');
             Route::get('payments', [\App\Http\Controllers\PaymentController::class, 'customerPayments'])->name('payments.index');
             Route::post('payments/submit', [\App\Http\Controllers\PaymentController::class, 'submitPayment'])->name('payments.submit');
+            Route::get('payments/{id}/proof', [\App\Http\Controllers\PaymentController::class, 'customerServeProof'])->name('payments.proof');
             Route::get('attendees', [\App\Http\Controllers\AttendeeController::class, 'index'])->name('attendees.index');
             Route::post('attendees/store', [\App\Http\Controllers\AttendeeController::class, 'store'])->name('attendees.store');
             Route::post('attendees/{id}/update', [\App\Http\Controllers\AttendeeController::class, 'update'])->name('attendees.update');

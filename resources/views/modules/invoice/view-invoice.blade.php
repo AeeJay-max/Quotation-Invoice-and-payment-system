@@ -492,12 +492,30 @@
                                                 <td class="table-amount text-right">{{ number_format(($invoice->vat / 100 + 1) * ($total_price - $invoice->discount), 2) }}
                                                 </td>
                                             </tr>
+                                            @if(isset($verified_paid) && $verified_paid > 0)
+                                            <tr class="table-success">
+                                                <th class="table-label text-success">Verified Paid</th>
+                                                <td class="table-amount text-right text-success font-weight-bold">
+                                                    {{ number_format($verified_paid, 2) }}
+                                                </td>
+                                            </tr>
+                                            <tr class="{{ ($outstanding_balance ?? 0) <= 0 ? 'table-success' : 'table-danger' }}">
+                                                <th class="table-label {{ ($outstanding_balance ?? 0) <= 0 ? 'text-success' : 'text-danger' }}">Outstanding Balance</th>
+                                                <td class="table-amount text-right font-weight-bold {{ ($outstanding_balance ?? 0) <= 0 ? 'text-success' : 'text-danger' }}">
+                                                    {{ number_format($outstanding_balance ?? 0, 2) }}
+                                                    @if(($outstanding_balance ?? 0) <= 0)
+                                                        <span class="badge badge-success ml-1">PAID</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                            @endif
                                         </tfoot>
                                     </table>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+
                     <table>
                         <tr>
                             <td>

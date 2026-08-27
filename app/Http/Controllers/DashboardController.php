@@ -36,9 +36,11 @@ class DashboardController extends Controller
         $totalAttendees = Attendee::count();
         
         // Use the Payment model if it exists to find pending payments
-        // Assuming 'status' = 0 or 'pending'
         $pendingPaymentsCount = class_exists(\App\Models\Payment::class) ? 
-                                \App\Models\Payment::whereIn('status', ['pending', 0])->count() : 0;
+                                \App\Models\Payment::whereIn('status', ['submitted', 'pending'])->count() : 0;
+
+        $totalPaidVerified = class_exists(\App\Models\Payment::class) ?
+                                \App\Models\Payment::where('status', 'verified')->sum('amount_verified') : 0;
         
         $totalInvoiced = Invoice::sum('total');
         $totalPaid = Invoice::sum('amount_paid');
