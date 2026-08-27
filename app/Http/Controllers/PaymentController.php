@@ -15,13 +15,25 @@ class PaymentController extends Controller
     public function customerPayments()
     {
         $user = Auth::user();
-        $clientId = $user->client_id ?? optional($user->client()->first())->id;
+        // Resolve client_id: prefer the direct column, fall back to the belongsTo relationship
+        $clientId = $user->client_id ?? optional($user->clientRecord)->id;
 
-        $quotations = \App\Models\Quotation::where('client_id', $clientId)
-            ->orWhere('user_id', $user->id)
+        // Invoices belonging to this customer only, with the quotation eager-loaded
+        // (the view accesses $inv->quotation->quotation_number and $inv->amount_outstanding)
+        $invoices = Invoice::where('client_id', $clientId)
+            ->with('quotation')
+            ->latest()
             ->get();
 
-        $bankSettings = \App\Models\Settings::where('type', 'email')->pluck('description', 'label')->toArray();
+        // Quotations belonging to this customer only (client_id is the authoritative key)
+        // Removed the orWhere('user_id', ...) which could expose other clients' records
+        $quotations = \App\Models\Quotation::where('client_id', $clientId)
+            ->latest()
+            ->get();
+
+        $bankSettings = \App\Models\Settings::where('type', 'email')
+            ->pluck('description', 'label')
+            ->toArray();
 
         $payments = Payment::where('client_id', $clientId)
             ->with(['invoice', 'quotation', 'booking.event'])
@@ -34,17 +46,30 @@ class PaymentController extends Controller
     public function submitPayment(Request $request)
     {
         $validated = $request->validate([
-            'invoice_id' => 'required|exists:invoices,id',
-            'quotation_number' => 'required|string',
-            'amount' => 'required|numeric|min:0.01',
-            'payment_method' => 'required|string',
+            'invoice_id'            => 'required|exists:invoices,id',
+            'quotation_number'      => 'required|string',
+            'amount'                => 'required|numeric|min:0.01',
+            'payment_method'        => 'required|string',
             'transaction_reference' => 'required|string|max:100',
-            'proof_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
-            'notes' => 'nullable|string',
+            'proof_file'            => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'notes'                 => 'nullable|string',
         ]);
 
-        $invoice = Invoice::with(['booking', 'quotation'])->findOrFail($validated['invoice_id']);
-        $quotation = $invoice->quotation ?? \App\Models\Quotation::where('quotation_number', $validated['quotation_number'])->first();
+        $user     = Auth::user();
+        $clientId = $user->client_id ?? optional($user->clientRecord)->id;
+
+        // AUTHORIZATION: Verify the invoice belongs to the authenticated customer.
+        // Without this check, any customer could manipulate invoice_id and submit
+        // a payment against another customer's invoice.
+        $invoice = Invoice::with(['booking', 'quotation'])
+            ->where('id', $validated['invoice_id'])
+            ->where('client_id', $clientId)
+            ->firstOrFail();
+
+        $quotation = $invoice->quotation
+            ?? \App\Models\Quotation::where('quotation_number', $validated['quotation_number'])
+                ->where('client_id', $clientId)
+                ->first();
 
         $proofPath = null;
         if ($request->hasFile('proof_file')) {
@@ -52,27 +77,27 @@ class PaymentController extends Controller
         }
 
         $payment = Payment::create([
-            'invoice_id' => $invoice->id,
-            'booking_id' => $invoice->booking_id,
-            'quotation_id' => $quotation ? $quotation->id : $invoice->quotation_id,
-            'quotation_number' => $validated['quotation_number'],
-            'client_id' => $invoice->client_id,
-            'amount' => $validated['amount'],
-            'currency' => $invoice->event->currency ?? 'USD',
-            'payment_method' => $validated['payment_method'],
+            'invoice_id'            => $invoice->id,
+            'booking_id'            => $invoice->booking_id,
+            'quotation_id'          => $quotation ? $quotation->id : $invoice->quotation_id,
+            'quotation_number'      => $validated['quotation_number'],
+            'client_id'             => $invoice->client_id,
+            'amount'                => $validated['amount'],
+            'currency'              => optional($invoice->event)->currency ?? 'USD',
+            'payment_method'        => $validated['payment_method'],
             'transaction_reference' => $validated['transaction_reference'],
             'proof_of_payment_path' => $proofPath,
-            'payment_date' => now(),
-            'status' => 'submitted',
-            'notes' => $validated['notes'] ?? null,
+            'payment_date'          => now(),
+            'status'                => 'submitted',
+            'notes'                 => $validated['notes'] ?? null,
         ]);
 
         if ($invoice->booking) {
             BookingStatusHistory::create([
                 'booking_id' => $invoice->booking_id,
-                'user_id' => Auth::id(),
-                'status' => 'Payment Submitted',
-                'notes' => "Customer submitted payment of {$payment->currency} {$payment->amount} (Ref: {$payment->transaction_reference}).",
+                'user_id'    => Auth::id(),
+                'status'     => 'Payment Submitted',
+                'notes'      => "Customer submitted payment of {$payment->currency} {$payment->amount} (Ref: {$payment->transaction_reference}).",
             ]);
         }
 
