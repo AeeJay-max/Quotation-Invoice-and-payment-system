@@ -33,13 +33,6 @@
                 <li class="nav-header font-weight-bold text-warning">EVENT & EXHIBITIONS</li>
 
                 <li class="nav-item">
-                    <a href="{{ route('public.booking.wizard') }}" class="nav-link text-warning" target="_blank">
-                        <i class="fas fa-magic nav-icon"></i>
-                        <p>Quotation Wizard <i class="fas fa-external-link-alt right"></i></p>
-                    </a>
-                </li>
-
-                <li class="nav-item">
                     <a href="{{ route('admin.events.index') }}" class="nav-link">
                         <i class="fas fa-calendar-alt nav-icon"></i>
                         <p>Events Management</p>
@@ -64,29 +57,6 @@
                     <a href="{{ route('admin.badges.index') }}" class="nav-link">
                         <i class="fas fa-id-card nav-icon"></i>
                         <p>Badge Management</p>
-                    </a>
-                </li>
-
-                <li class="nav-header font-weight-bold text-info">EXHIBITOR PORTAL</li>
-
-                <li class="nav-item">
-                    <a href="{{ route('customer.dashboard') }}" class="nav-link">
-                        <i class="fas fa-user-shield nav-icon"></i>
-                        <p>Customer Dashboard</p>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="{{ route('customer.attendees.index') }}" class="nav-link">
-                        <i class="fas fa-user-plus nav-icon"></i>
-                        <p>Register Attendees</p>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="{{ route('customer.payments.index') }}" class="nav-link">
-                        <i class="fas fa-credit-card nav-icon"></i>
-                        <p>Payments & Proofs</p>
                     </a>
                 </li>
 

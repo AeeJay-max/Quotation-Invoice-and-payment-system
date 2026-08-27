@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('public-layout')
 
 @section('title', 'Exhibition Quotation Request')
 

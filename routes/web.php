@@ -159,7 +159,7 @@ Route::group([], function () {
         Route::post('profile/update', [\App\Http\Controllers\UserProfile::class, 'update']);
 
         // --- Customer Portal Routes ---
-        Route::group(['prefix' => 'customer', 'as' => 'customer.'], function () {
+        Route::group(['prefix' => 'customer', 'as' => 'customer.', 'middleware' => 'customer'], function () {
             Route::get('dashboard', [\App\Http\Controllers\CustomerPortalController::class, 'dashboard'])->name('dashboard');
             Route::get('bookings', [\App\Http\Controllers\CustomerPortalController::class, 'bookings'])->name('bookings.index');
             Route::get('bookings/{id}', [\App\Http\Controllers\CustomerPortalController::class, 'showBooking'])->name('bookings.show');

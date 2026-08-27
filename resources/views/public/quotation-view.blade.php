@@ -1,19 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exhibition Quotation #{{ $quotation->quotation_number ?? $quotation->id }}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .invoice-box { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-top: 30px; margin-bottom: 50px; }
-        .header-bg { background: #1e3c72; color: #fff; border-radius: 8px; padding: 20px; }
-        .status-badge { font-size: 1rem; padding: 8px 16px; border-radius: 20px; font-weight: bold; }
-    </style>
-</head>
-<body>
+@extends('public-layout')
+
+@section('title', 'Exhibition Quotation #' . ($quotation->quotation_number ?? $quotation->id))
+
+@section('content')
+<style>
+    .invoice-box { background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-top: 30px; margin-bottom: 50px; }
+    .header-bg { background: #1e3c72; color: #fff; border-radius: 8px; padding: 20px; }
+    .status-badge { font-size: 1rem; padding: 8px 16px; border-radius: 20px; font-weight: bold; }
+</style>
 
 <div class="container">
     <div class="invoice-box">
@@ -33,7 +27,14 @@
                 <p class="mb-0 text-white-50">Reference: {{ $quotation->quotation_number ?? 'QUO-'.$quotation->id }}</p>
             </div>
             <div>
-                <span class="badge badge-warning status-badge text-uppercase">{{ $quotation->status }}</span>
+                @php
+                    $statusDisplay = strtoupper($quotation->status);
+                    if ($quotation->status === 'pending') $statusDisplay = 'PENDING ADMIN APPROVAL';
+                    if ($quotation->status === 'approved') $statusDisplay = 'APPROVED — ACTION REQUIRED';
+                    if ($quotation->status === 'rejected') $statusDisplay = 'REJECTED';
+                    if ($quotation->status === 'accepted' || $quotation->status === 'confirmed') $statusDisplay = 'CONFIRMED';
+                @endphp
+                <span class="badge badge-warning status-badge text-uppercase">{{ $statusDisplay }}</span>
             </div>
         </div>
 
@@ -153,14 +154,14 @@
                 <i class="fas fa-print mr-1"></i> Download / Print PDF
             </a>
 
-            @if($quotation->status !== 'accepted')
+            @if($quotation->status === 'approved')
                 <form action="{{ route('public.quotation.confirm', $quotation->id) }}" method="POST">
                     @csrf
                     <button type="submit" class="btn btn-success btn-lg font-weight-bold px-5 shadow">
-                        <i class="fas fa-check-circle mr-2"></i> CONFIRM QUOTATION
+                        <i class="fas fa-check-circle mr-2"></i> CONFIRM APPROVED QUOTATION
                     </button>
                 </form>
-            @else
+            @elseif($quotation->status === 'accepted' || $quotation->status === 'confirmed')
                 <a href="{{ route('customer.dashboard') }}" class="btn btn-primary btn-lg font-weight-bold px-4">
                     <i class="fas fa-user-shield mr-2"></i> Go to Customer Portal
                 </a>
@@ -170,5 +171,4 @@
     </div>
 </div>
 
-</body>
-</html>
+@endsection

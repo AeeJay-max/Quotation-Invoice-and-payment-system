@@ -23,35 +23,52 @@ class DashboardController extends Controller
             return redirect()->route('customer.dashboard');
         }
 
-        $invoices = Invoice::all();
-        $quotations = Quotation::all();
-        $users = User::where('is_admin', true)->orWhere('role_id', 1)->get();
-        $clients = Client::all();
-        
+        // --- Core Metrics ---
         $totalEvents = Event::count();
-        $activeEvents = Event::whereIn('status', ['published', 'registration_open'])->count();
-        $totalBookings = Booking::count();
-        $confirmedBookings = Booking::whereIn('status', ['confirmed', 'accepted'])->count();
+        $upcomingEventsCount = Event::where('start_date', '>', Carbon::now())->count();
+        $totalExhibitors = Client::count(); // Exhibitors are represented by Clients
+
         $pendingQuotations = Quotation::where('status', 'pending')->count();
+        $approvedQuotations = Quotation::where('status', 'approved')->count();
+        $rejectedQuotations = Quotation::where('status', 'rejected')->count();
+        
+        $confirmedBookings = Booking::whereIn('status', ['confirmed', 'accepted'])->count();
         $totalAttendees = Attendee::count();
-        $approvedAttendees = Attendee::where('status', 'approved')->count();
-        $badgesPrinted = Badge::where('status', 'printed')->count();
-        $totalRevenue = Booking::whereIn('status', ['confirmed', 'accepted'])->sum('grand_total');
+        
+        // Use the Payment model if it exists to find pending payments
+        // Assuming 'status' = 0 or 'pending'
+        $pendingPaymentsCount = class_exists(\App\Models\Payment::class) ? 
+                                \App\Models\Payment::whereIn('status', ['pending', 0])->count() : 0;
+        
+        $totalInvoiced = Invoice::sum('total');
+        $totalPaid = Invoice::sum('amount_paid');
+        $outstandingBalance = Invoice::sum('amount_outstanding');
+
+        // --- Recent Data for Tables ---
+        $recentQuotations = Quotation::with('client')->latest()->take(5)->get();
+        $recentBookings = Booking::with('client')->latest()->take(5)->get();
+        $recentPayments = class_exists(\App\Models\Payment::class) ? 
+                          \App\Models\Payment::with('client')->latest()->take(5)->get() : collect();
+        $upcomingEvents = Event::where('start_date', '>', Carbon::now())->orderBy('start_date', 'asc')->take(5)->get();
 
         return view('dashboard')->with([
-            'invoices' => $invoices,
-            'quotations' => $quotations,
-            'users' => $users,
-            'clients' => $clients,
             'totalEvents' => $totalEvents,
-            'activeEvents' => $activeEvents,
-            'totalBookings' => $totalBookings,
-            'confirmedBookings' => $confirmedBookings,
+            'upcomingEventsCount' => $upcomingEventsCount,
+            'totalExhibitors' => $totalExhibitors,
             'pendingQuotations' => $pendingQuotations,
+            'approvedQuotations' => $approvedQuotations,
+            'rejectedQuotations' => $rejectedQuotations,
+            'confirmedBookings' => $confirmedBookings,
             'totalAttendees' => $totalAttendees,
-            'approvedAttendees' => $approvedAttendees,
-            'badgesPrinted' => $badgesPrinted,
-            'totalRevenue' => $totalRevenue,
+            'pendingPaymentsCount' => $pendingPaymentsCount,
+            'totalInvoiced' => $totalInvoiced,
+            'totalPaid' => $totalPaid,
+            'outstandingBalance' => $outstandingBalance,
+            
+            'recentQuotations' => $recentQuotations,
+            'recentBookings' => $recentBookings,
+            'recentPayments' => $recentPayments,
+            'upcomingEvents' => $upcomingEvents,
         ]);
     }
 }

@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('customer-layout')
 
 @section('title', 'My Quotations')
 
@@ -66,3 +66,4 @@
     </div>
 </div>
 @endsection
+

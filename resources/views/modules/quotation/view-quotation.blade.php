@@ -322,14 +322,14 @@
                                     @csrf
                                     <input type="hidden" name="status" value="approved">
                                     <button type="submit" class="btn btn-flat margin-bottom bg-green pull-right mr-2" title="Approve">
-                                        <i class="fa fa-check"></i> Approve
+                                        <i class="fa fa-check"></i> Approve Quotation
                                     </button>
                                 </form>
                                 <form action="{{ route('admin.quotation.status', $quotation->id) }}" method="POST" class="d-inline" style="display: inline-block;">
                                     @csrf
                                     <input type="hidden" name="status" value="rejected">
                                     <button type="submit" class="btn btn-flat margin-bottom bg-red pull-right mr-2" title="Reject">
-                                        <i class="fa fa-times"></i> Reject
+                                        <i class="fa fa-times"></i> Reject Quotation
                                     </button>
                                 </form>
                             @endif

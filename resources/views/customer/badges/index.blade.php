@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('customer-layout')
 
 @section('title', 'My Company Badges')
 
@@ -48,3 +48,4 @@
     </div>
 </div>
 @endsection
+

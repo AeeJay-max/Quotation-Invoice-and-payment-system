@@ -1,159 +1,198 @@
 @extends('layout')
 
-@section('title', 'Dashboard')
-@section('dashboard-show')
-    menu-open
-@endsection
-@section('dashboard')
-    active
-@endsection
+@section('title', 'Admin Dashboard')
 
 @section('content')
-    <div class="content-wrapper">
-        <div class="row">
-            <div class="col-lg-3 col-6">
-                <!-- small card -->
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>{{$invoices->count()}}</h3>
-                        <p>Invoices</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-file-invoice-dollar"></i>
-                    </div>
-                    <a href="invoice" class="small-box-footer">
-                        More info <i class="fas fa-arrow-circle-right"></i>
-                    </a>
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 font-weight-bold text-dark"><i class="fas fa-tachometer-alt text-primary"></i> Admin Dashboard</h1>
                 </div>
             </div>
-            <div class="col-lg-3 col-6">
-                <!-- small card -->
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>{{$quotations->count()}}</h3>
-                        <p>Quotations</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-receipt"></i>
-                    </div>
-                    <a href="quotation" class="small-box-footer">
-                        More info <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small card -->
-                <div class="small-box bg-secondary">
-                    <div class="inner">
-                        <h3>{{$pendingQuotations ?? 0}}</h3>
-                        <p>Pending Quotations</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <a href="quotation" class="small-box-footer">
-                        Review <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small card -->
-                <div class="small-box bg-primary">
-                    <div class="inner">
-                        <h3>{{$totalEvents ?? 0}}</h3>
-                        <p>Exhibition Events</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <a href="{{ route('admin.events.index') }}" class="small-box-footer">
-                        Manage Events <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small card -->
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>{{$confirmedBookings ?? 0}}</h3>
-                        <p>Confirmed Bookings</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-file-contract"></i>
-                    </div>
-                    <a href="{{ route('admin.bookings.index') }}" class="small-box-footer">
-                        View Bookings <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small card -->
-                <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h3>{{$clients->count()}}</h3>
-
-                        <p>Clients</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-users-cog"></i>
-                    </div>
-                    <a href="client" class="small-box-footer">
-                        More info <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-         @foreach($users as $user)
-                <div class="col-md-4">
-                    <!-- Widget: user widget style 2 -->
-                    <div class="card card-widget widget-user-2">
-                        <!-- Add the bg color to the header using any of the bg-* classes -->
-                        <div class="widget-user-header bg-warning">
-                            <div class="widget-user-image">
-                            </div>
-                            <!-- /.widget-user-image -->
-                            <h3 class="widget-user-username">{{$user->name}}</h3>
-{{--                            <h5 class="widget-user-desc">Lead Developer</h5>--}}
-                        </div>
-                        <div class="card-footer p-0">
-                            <ul class="nav flex-column">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        Invoices <span class="float-right badge bg-primary">{{$user->invoice->count()}}</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        Quotations <span class="float-right badge bg-info">{{$user->quotation->count()}}</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        Expenses <span class="float-right badge bg-success">{{$user->expense->count()}}</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        Clients <span class="float-right badge bg-danger">{{$user->client->count()}}</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- /.widget-user -->
-                </div>
-            @endforeach
         </div>
     </div>
 
+    <section class="content">
+        <div class="container-fluid">
+            <!-- QUICK ACTIONS -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="card-title font-weight-bold"><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        </div>
+                        <div class="card-body">
+                            <a href="{{ route('admin.events.create') }}" class="btn btn-outline-primary m-1"><i class="fas fa-calendar-plus mr-1"></i> Create Event</a>
+                            <a href="{{ route('admin.quotations.index') }}?status=pending" class="btn btn-outline-warning m-1"><i class="fas fa-file-signature mr-1"></i> Review Quotations</a>
+                            <a href="{{ route('admin.bookings.index') }}" class="btn btn-outline-success m-1"><i class="fas fa-file-contract mr-1"></i> Manage Bookings</a>
+                            <a href="{{ route('admin.payments.index') }}?status=pending" class="btn btn-outline-info m-1"><i class="fas fa-money-check-alt mr-1"></i> Verify Payments</a>
+                            <a href="{{ route('admin.attendees.index') }}" class="btn btn-outline-secondary m-1"><i class="fas fa-users mr-1"></i> Manage Attendees</a>
+                            <a href="{{ route('admin.badges.index') }}" class="btn btn-outline-dark m-1"><i class="fas fa-id-badge mr-1"></i> Manage Badges</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CORE METRICS -->
+            <h5 class="mb-3 font-weight-bold">Operational Statistics</h5>
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner"><h3>{{ $totalEvents }}</h3><p>Total Events</p></div>
+                        <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner"><h3>{{ $upcomingEventsCount }}</h3><p>Upcoming Events</p></div>
+                        <div class="icon"><i class="fas fa-calendar-day"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-primary">
+                        <div class="inner"><h3>{{ $totalExhibitors }}</h3><p>Total Exhibitors</p></div>
+                        <div class="icon"><i class="fas fa-store"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-warning">
+                        <div class="inner"><h3>{{ $pendingQuotations }}</h3><p>Pending Quotations</p></div>
+                        <div class="icon"><i class="fas fa-hourglass-half"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner"><h3>{{ $approvedQuotations }}</h3><p>Approved Quotations</p></div>
+                        <div class="icon"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-danger">
+                        <div class="inner"><h3>{{ $rejectedQuotations }}</h3><p>Rejected Quotations</p></div>
+                        <div class="icon"><i class="fas fa-times"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner"><h3>{{ $confirmedBookings }}</h3><p>Confirmed Bookings</p></div>
+                        <div class="icon"><i class="fas fa-file-contract"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-secondary">
+                        <div class="inner"><h3>{{ $totalAttendees }}</h3><p>Total Attendees</p></div>
+                        <div class="icon"><i class="fas fa-users"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FINANCIAL METRICS -->
+            <h5 class="mb-3 font-weight-bold mt-4">Financial Statistics</h5>
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-warning">
+                        <div class="inner"><h3>{{ $pendingPaymentsCount }}</h3><p>Pending Verifications</p></div>
+                        <div class="icon"><i class="fas fa-money-check"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner"><h3>${{ number_format($totalInvoiced, 2) }}</h3><p>Total Invoiced</p></div>
+                        <div class="icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner"><h3>${{ number_format($totalPaid, 2) }}</h3><p>Total Paid</p></div>
+                        <div class="icon"><i class="fas fa-hand-holding-usd"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-danger">
+                        <div class="inner"><h3>${{ number_format($outstandingBalance, 2) }}</h3><p>Outstanding Balance</p></div>
+                        <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECENT LISTS -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-dark text-white">
+                            <h3 class="card-title">Recent Quotations</h3>
+                        </div>
+                        <div class="card-body p-0 table-responsive">
+                            <table class="table table-striped table-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Ref</th>
+                                        <th>Company</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($recentQuotations as $q)
+                                        <tr>
+                                            <td>{{ $q->quotation_number ?? 'QUO-'.$q->id }}</td>
+                                            <td>{{ $q->client->company_name ?? 'N/A' }}</td>
+                                            <td>
+                                                @php
+                                                    $statusDisplay = strtoupper($q->status);
+                                                    if ($q->status === 'pending') $statusDisplay = 'PENDING ADMIN APPROVAL';
+                                                    if ($q->status === 'approved') $statusDisplay = 'APPROVED';
+                                                @endphp
+                                                <span class="badge {{ $q->status == 'pending' ? 'badge-warning' : ($q->status == 'approved' ? 'badge-info' : 'badge-secondary') }}">
+                                                    {{ $statusDisplay }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="3" class="text-center text-muted">No recent quotations.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-dark text-white">
+                            <h3 class="card-title">Recent Bookings</h3>
+                        </div>
+                        <div class="card-body p-0 table-responsive">
+                            <table class="table table-striped table-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Booking #</th>
+                                        <th>Company</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($recentBookings as $b)
+                                        <tr>
+                                            <td>{{ $b->booking_number ?? 'BOOK-'.$b->id }}</td>
+                                            <td>{{ $b->client->company_name ?? 'N/A' }}</td>
+                                            <td>${{ number_format($b->grand_total, 2) }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="3" class="text-center text-muted">No recent bookings.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</div>
 @endsection
-
-
-@push('scripts')
-
-    <script type="text/javascript">
-
-
-    </script>
-@endpush

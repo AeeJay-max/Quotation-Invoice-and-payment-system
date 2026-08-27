@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('customer-layout')
 
 @section('title', 'Company Attendees Registration')
 
@@ -153,3 +153,4 @@
     @endif
 </div>
 @endsection
+

@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('customer-layout')
 
 @section('title', 'Payments & Proof Upload')
 
@@ -149,3 +149,4 @@
     </div>
 </div>
 @endsection
+

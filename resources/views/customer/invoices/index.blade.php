@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('customer-layout')
 
 @section('title', 'My Invoices')
 
@@ -57,3 +57,4 @@
     </div>
 </div>
 @endsection
+

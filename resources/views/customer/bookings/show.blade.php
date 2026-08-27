@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('customer-layout')
 
 @section('title', 'Booking Details #' . $booking->booking_number)
 
@@ -68,3 +68,4 @@
     </div>
 </div>
 @endsection
+

@@ -40,36 +40,40 @@ class CustomerPortalController extends Controller
 
         $activeBooking = $bookings->first();
 
-        $totalPaid = 0;
-        $totalBalance = 0;
-        $grandTotal = 0;
-        $paidPercentage = 0;
+        // Calculate overarching stats for the dashboard cards
+        $pendingQuotations = Quotation::where('client_id', $clientId)->where('status', 'pending')->count();
+        $approvedQuotations = Quotation::where('client_id', $clientId)->where('status', 'approved')->count();
+        $confirmedBookings = Booking::where('client_id', $clientId)->whereIn('status', ['confirmed', 'accepted'])->count();
 
-        if ($activeBooking && $activeBooking->invoice) {
-            $grandTotal = $activeBooking->invoice->total > 0 ? $activeBooking->invoice->total : $activeBooking->grand_total;
-            $totalPaid = $activeBooking->invoice->amount_paid;
-            $totalBalance = $activeBooking->invoice->amount_outstanding;
-            if ($grandTotal > 0) {
-                $paidPercentage = min(100, round(($totalPaid / $grandTotal) * 100));
-            }
-        } elseif ($activeBooking) {
-            $grandTotal = $activeBooking->grand_total;
-        }
+        // Overall finance for the exhibitor
+        $invoices = Invoice::where('client_id', $clientId)->get();
+        $totalInvoiced = $invoices->sum('total');
+        $totalPaid = $invoices->sum('amount_paid');
+        $totalBalance = $invoices->sum('amount_outstanding');
+        $paidPercentage = $totalInvoiced > 0 ? min(100, round(($totalPaid / $totalInvoiced) * 100)) : 0;
 
-        $attendeeCount = $activeBooking ? $activeBooking->attendees->count() : 0;
-        $approvedAttendees = $activeBooking ? $activeBooking->attendees->where('status', 'approved')->count() : 0;
-        $badgesGenerated = $activeBooking ? $activeBooking->badges->count() : 0;
+        // Overall Attendees and Badges
+        $attendeeCount = Attendee::whereHas('booking', function ($q) use ($clientId) {
+            $q->where('client_id', $clientId);
+        })->count();
+        
+        $badgesGenerated = Badge::whereHas('booking', function ($q) use ($clientId) {
+            $q->where('client_id', $clientId);
+        })->count();
+
         $bankDetails = $this->getBankDetails();
 
         return view('customer.dashboard', compact(
             'bookings',
             'activeBooking',
-            'grandTotal',
+            'pendingQuotations',
+            'approvedQuotations',
+            'confirmedBookings',
+            'totalInvoiced',
             'totalPaid',
             'totalBalance',
             'paidPercentage',
             'attendeeCount',
-            'approvedAttendees',
             'badgesGenerated',
             'bankDetails'
         ));

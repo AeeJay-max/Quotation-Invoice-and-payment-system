@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('customer-layout')
 
 @section('title', 'Invoice #' . $invoice->invoice_number)
 
@@ -64,3 +64,4 @@
     </div>
 </div>
 @endsection
+
