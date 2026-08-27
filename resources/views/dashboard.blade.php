@@ -25,9 +25,9 @@
                         </div>
                         <div class="card-body">
                             <a href="{{ route('admin.events.create') }}" class="btn btn-outline-primary m-1"><i class="fas fa-calendar-plus mr-1"></i> Create Event</a>
-                            <a href="{{ route('admin.quotations.index') }}?status=pending" class="btn btn-outline-warning m-1"><i class="fas fa-file-signature mr-1"></i> Review Quotations</a>
+                            <a href="/quotation?status=pending" class="btn btn-outline-warning m-1"><i class="fas fa-file-signature mr-1"></i> Review Quotations</a>
                             <a href="{{ route('admin.bookings.index') }}" class="btn btn-outline-success m-1"><i class="fas fa-file-contract mr-1"></i> Manage Bookings</a>
-                            <a href="{{ route('admin.payments.index') }}?status=pending" class="btn btn-outline-info m-1"><i class="fas fa-money-check-alt mr-1"></i> Verify Payments</a>
+                            <a href="/invoice" class="btn btn-outline-info m-1"><i class="fas fa-money-check-alt mr-1"></i> View Invoices</a>
                             <a href="{{ route('admin.attendees.index') }}" class="btn btn-outline-secondary m-1"><i class="fas fa-users mr-1"></i> Manage Attendees</a>
                             <a href="{{ route('admin.badges.index') }}" class="btn btn-outline-dark m-1"><i class="fas fa-id-badge mr-1"></i> Manage Badges</a>
                         </div>

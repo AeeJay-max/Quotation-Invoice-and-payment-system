@@ -29,6 +29,13 @@ class AuthServiceProvider extends ServiceProvider
 
         Passport::routes();
 
+        // Admins bypass ALL gate checks — full access always
+        Gate::before(function ($user, $ability) {
+            if ($user->is_admin || $user->role_id == 1) {
+                return true;
+            }
+        });
+
         Gate::define('create', function ($user, $model) {
             $role = Auth::user()->role;
             if (!$role || empty($role->permission)) {
