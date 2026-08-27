@@ -13,11 +13,9 @@ class PaymentCurrency extends Seeder
      */
     public function run()
     {
-        $data = array(
-            array('name'=>'USD'),
-            array('name'=>'ZWL'),
-            array('name'=>'RTGS'),
-        );
-        \App\Models\PaymentCurrency::insert($data);
+        $currencies = ['USD', 'ZWL', 'RTGS'];
+        foreach ($currencies as $name) {
+            \App\Models\PaymentCurrency::firstOrCreate(['name' => $name]);
+        }
     }
 }

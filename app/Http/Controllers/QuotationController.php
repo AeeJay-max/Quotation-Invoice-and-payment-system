@@ -56,7 +56,7 @@ class QuotationController extends Controller
             return response()->json(['message' => 'not authorized'], 403);
         }
         $settings = Settings::where('type', 'system')->pluck('description', 'label');
-        $quotation = Quotation::find($id);
+        $quotation = Quotation::with(['items', 'client', 'paymentType', 'paymentCurrency'])->findOrFail($id);
         $templates = EmailTemplate::all();
         $total = 0;
         foreach ($quotation->items as $item) {

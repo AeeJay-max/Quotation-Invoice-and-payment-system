@@ -362,9 +362,9 @@
                                 <span><strong>Address:  </strong>{{ $settings['app_address'] ?? '' }}</span>
                                 <span>
                                     <strong>Email(s):  </strong>
-                                    {!! implode('<br>', explode(',', $settings['app_email'])) !!}
+                                    {!! implode('<br>', explode(',', $settings['app_email'] ?? '')) !!}
                                 </span>
-                                <span> <strong>Phone Number(s):  </strong>{!! implode('<br>', explode(',', $settings['app_phone'])) !!}</span>
+                                <span> <strong>Phone Number(s):  </strong>{!! implode('<br>', explode(',', $settings['app_phone'] ?? '')) !!}</span>
                             </td>
                         </tr>
                     </table>
@@ -375,11 +375,11 @@
                             <td width="50%">
                                 <h4>Quotation To:</h4>
                                 <address>
-                                    <strong>{{ $quotation->client->name }}</strong><br>
-                                    {{ $quotation->client->company_name }}<br>
-                                    {{ $quotation->client->address }}<br>
-                                    {{ $quotation->client->phone }}<br>
-                                    {{ $quotation->client->email }}<br>
+                                    <strong>{{ $quotation->client->name ?? 'N/A' }}</strong><br>
+                                    {{ $quotation->client->company_name ?? '' }}<br>
+                                    {{ $quotation->client->address ?? '' }}<br>
+                                    {{ $quotation->client->phone ?? '' }}<br>
+                                    {{ $quotation->client->email ?? '' }}<br>
                                 </address>
                             </td>
                             <td width="50%">
@@ -392,11 +392,11 @@
                                         </tr>
                                         <tr>
                                             <th><b>Payment Type:</b></th>
-                                            <td>{{ $quotation->paymentType->name }}</td>
+                                            <td>{{ $quotation->paymentType->name ?? 'N/A' }}</td>
                                         </tr>
                                         <tr>
                                             <th><b>Payment Currency:</b></th>
-                                            <td>{{ $quotation->paymentCurrency->name }}</td>
+                                            <td>{{ $quotation->paymentCurrency->name ?? 'N/A' }}</td>
                                         </tr>
                                         <tr>
                                             <th><b>Created Date:</b></th>
@@ -632,7 +632,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <p style="text-align: center;font-style: italic"><small>{{$settings['app_moto']}}</small></p>
+                    <p style="text-align: center;font-style: italic"><small>{{$settings['app_moto'] ?? ''}}</small></p>
 
                 </div>
             </div>

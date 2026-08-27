@@ -13,11 +13,9 @@ class PaymentType extends Seeder
      */
     public function run()
     {
-        $data = array(
-            array('name' => 'Cash'),
-            array('name' => 'Bank Transfer'),
-            array('name' => 'Ecocash'),
-        );
-        \App\Models\PaymentType::insert($data);
+        $types = ['Cash', 'Bank Transfer', 'Ecocash'];
+        foreach ($types as $name) {
+            \App\Models\PaymentType::firstOrCreate(['name' => $name]);
+        }
     }
 }
