@@ -230,66 +230,99 @@
 <body>
 <div id="page-wrap">
     <div id="page-wrap-inner">
-        <table width="100%">
+        {{-- ══ MINISTRY OFFICIAL HEADER ══ --}}
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:0;">
             <tr>
-                <td width="40%">
-                    <img style="width: 150px;height: auto" src="{{ public_path($settings['logo'] ?? '') }}" class="">
+                <td width="18%" style="vertical-align:middle; padding-right:12px;">
+                    <img src="{{ public_path($settings['logo'] ?? 'assets/files/ministry-logo.png') }}"
+                         alt="Ministry Logo"
+                         style="width:100px; height:auto; display:block;">
                 </td>
-                <td width="60%" class="company-details">
-                    <span style="font-size: 20px;"><strong>{{ $settings['app_name'] ?? '' }}</strong></span>
-                    <span><strong>Address:  </strong>{{ $settings['app_address'] ?? '' }}</span>
-                    <span>
-                        <strong>Email(s): </strong>
-                        {!! implode('<br>', explode(',', $settings['app_email'])) !!}
-                    </span>
-                    <span>
-                        <strong>Phone Number(s): </strong>
-                        {!! implode('<br>', explode(',', $settings['app_phone'])) !!}
-                    </span>
+                <td width="82%" style="vertical-align:middle;">
+                    <div style="font-size:15px; font-weight:700; color:#1a5c1a; text-transform:uppercase; letter-spacing:0.5px; line-height:1.3;">
+                        {{ $settings['app_name'] ?? 'Ministry of Sports, Recreation, Arts and Culture' }}
+                    </div>
+                    <div style="font-size:11px; color:#444; margin-top:4px; line-height:1.7;">
+                        {{ $settings['app_address'] ?? 'Chinengundu Mashayamombe Building 95, Cnr N. Mandela & S. V. Muzenda Street, Harare' }}<br>
+                        {{ $settings['app_postal_address'] ?? 'P.O. Box HR 480 Harare' }}<br>
+                        <strong>Email:</strong> {{ $settings['app_email'] ?? 'minofsportandarts@gmail.com' }}
+                        &nbsp;|&nbsp;
+                        <strong>Tel:</strong> {{ $settings['app_phone'] ?? '+263242708345' }}
+                    </div>
                 </td>
             </tr>
         </table>
+        <div style="border-top:3px solid #1a5c1a; border-bottom:1px solid #ccc; margin:8px 0 12px 0;"></div>
 
-
-        <hr>
-        <table width="100%">
+        {{-- ══ DOCUMENT TITLE & STATUS ══ --}}
+        @php
+            $statusLabel = match(strtolower($quotation->status ?? 'pending')) {
+                'approved' => 'APPROVED BY ADMIN',
+                'rejected' => 'REJECTED',
+                'accepted' => 'CONFIRMED BY EXHIBITOR',
+                default    => 'PENDING ADMIN REVIEW',
+            };
+        @endphp
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px;">
             <tr>
-                <td width="50%">
-                    <h4>Quotation To:</h4>
-                    <address>
-                        <strong>{{ $quotation->client->name }}</strong><br>
-                        {{ $quotation->client->company_name}}<br>
-                        {{ $quotation->client->address}}<br>
-                        {{ $quotation->client->phone }}<br>
-                        {{ $quotation->client->email }}<br>
-                    </address>
+                <td>
+                    <div style="font-size:18px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#1a5c1a;">EXHIBITION QUOTATION</div>
+                    <div style="font-size:11px; color:#555; margin-top:3px;">
+                        <strong>Quotation No:</strong> {{ $quotation->quotation_number ?? '#'.$quotation->id }}
+                        &nbsp;&nbsp;|&nbsp;&nbsp;
+                        <strong>Date:</strong> {{ $quotation->create_date ? \Carbon\Carbon::parse($quotation->create_date)->format('d F Y') : 'N/A' }}
+                        &nbsp;&nbsp;|&nbsp;&nbsp;
+                        <strong>Status:</strong> {{ $statusLabel }}
+                    </div>
                 </td>
-                <td width="50%">
-                    <h2>Quotation Info</h2>
-                    <table class="table table-striped table-bordered" width="100%">
+            </tr>
+        </table>
+        <div style="border-top:1px solid #ccc; margin-bottom:10px;"></div>
+
+        <table width="100%" cellpadding="4" cellspacing="0">
+            <tr>
+                <td width="50%" style="vertical-align:top;">
+                    <div style="font-size:11px; font-weight:700; color:#1a5c1a; border-bottom:2px solid #1a5c1a; padding-bottom:3px; margin-bottom:5px; text-transform:uppercase;">Quotation To:</div>
+                    <div style="font-size:11px; line-height:1.7;">
+                        <strong>{{ $quotation->client->name ?? 'N/A' }}</strong><br>
+                        {{ $quotation->client->company_name ?? '' }}<br>
+                        {{ $quotation->client->address ?? '' }}<br>
+                        @if($quotation->client->phone ?? false)<strong>Tel:</strong> {{ $quotation->client->phone }}<br>@endif
+                        @if($quotation->client->email ?? false)<strong>Email:</strong> {{ $quotation->client->email }}<br>@endif
+                    </div>
+                </td>
+                <td width="50%" style="vertical-align:top; padding-left:15px;">
+                    <div style="font-size:11px; font-weight:700; color:#1a5c1a; border-bottom:2px solid #1a5c1a; padding-bottom:3px; margin-bottom:5px; text-transform:uppercase;">Quotation Details:</div>
+                    <table class="table table-bordered" width="100%" style="font-size:11px;">
                         <tbody>
-                        <tr>
-                            <th><b>Quotation ID:</b></th>
-                            <td>#{{ $quotation->id }}</td>
-                        </tr>
-                        <tr>
-                            <th><b>Payment Type:</b></th>
-                            <td>{{ $quotation->paymentType->name }}</td>
-                        </tr>
-                        <tr>
-                            <th><b>Payment Currency:</b></th>
-                            <td>{{ $quotation->paymentCurrency->name }}</td>
-                        </tr>
-                        <tr>
-                            <th><b>Created Date:</b></th>
-                            <td>#{{ Carbon\Carbon::parse($quotation->create_date)->format('jS F Y ') }}</td>
-                        </tr>
+                            <tr>
+                                <th style="background:#f5f5f5; width:45%;">Quotation No:</th>
+                                <td><strong>{{ $quotation->quotation_number ?? '#'.$quotation->id }}</strong></td>
+                            </tr>
+                            <tr>
+                                <th style="background:#f5f5f5;">Date Issued:</th>
+                                <td>{{ $quotation->create_date ? \Carbon\Carbon::parse($quotation->create_date)->format('d M Y') : 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th style="background:#f5f5f5;">Payment Type:</th>
+                                <td>{{ $quotation->paymentType->name ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th style="background:#f5f5f5;">Currency:</th>
+                                <td>{{ $quotation->paymentCurrency->name ?? 'USD' }}</td>
+                            </tr>
+                            <tr>
+                                <th style="background:#f5f5f5;">Status:</th>
+                                <td><strong>{{ $statusLabel }}</strong></td>
+                            </tr>
                         </tbody>
                     </table>
                 </td>
             </tr>
         </table>
-        <br/><br/>
+        <br>
+
+
 
         <table class="table table-striped table-bordered">
             <thead>

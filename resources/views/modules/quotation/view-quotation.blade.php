@@ -352,55 +352,99 @@
                     </div>
                 </div>
                 <div id="page-wrap-inner">
-                    <table width="100%">
+                    {{-- ══ MINISTRY OFFICIAL HEADER ══ --}}
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:0;">
                         <tr>
-                            <td width="40%">
-                                <img style="width: 150px;height: auto" src="{{ asset($settings['logo'] ?? '') }}" class="">
+                            <td width="18%" style="vertical-align:middle; padding-right:14px;">
+                                <img src="{{ asset($settings['logo'] ?? 'assets/files/ministry-logo.png') }}"
+                                     alt="Ministry Logo"
+                                     style="width:110px; height:auto; display:block;">
                             </td>
-                            <td width="60%" class="company-details">
-                                <span style="font-size: 20px;"><strong>{{ $settings['app_name'] ?? '' }}</strong></span>
-                                <span><strong>Address:  </strong>{{ $settings['app_address'] ?? '' }}</span>
-                                <span>
-                                    <strong>Email(s):  </strong>
-                                    {!! implode('<br>', explode(',', $settings['app_email'] ?? '')) !!}
-                                </span>
-                                <span> <strong>Phone Number(s):  </strong>{!! implode('<br>', explode(',', $settings['app_phone'] ?? '')) !!}</span>
+                            <td width="82%" style="vertical-align:middle;">
+                                <div style="font-size:17px; font-weight:700; color:#1a5c1a; text-transform:uppercase; letter-spacing:0.5px; line-height:1.3;">
+                                    {{ $settings['app_name'] ?? 'Ministry of Sports, Recreation, Arts and Culture' }}
+                                </div>
+                                <div style="font-size:12px; color:#444; margin-top:5px; line-height:1.8;">
+                                    {{ $settings['app_address'] ?? 'Chinengundu Mashayamombe Building 95, Cnr N. Mandela & S. V. Muzenda Street, Harare' }}<br>
+                                    {{ $settings['app_postal_address'] ?? 'P.O. Box HR 480 Harare' }}<br>
+                                    <strong>Email:</strong> {{ $settings['app_email'] ?? 'minofsportandarts@gmail.com' }}
+                                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                                    <strong>Tel:</strong> {{ $settings['app_phone'] ?? '+263242708345' }}
+                                </div>
                             </td>
                         </tr>
                     </table>
+                    <div style="border-top:3px solid #1a5c1a; border-bottom:1px solid #ccc; margin:10px 0 16px 0;"></div>
 
-                    <hr>
-                    <table width="100%">
+                    {{-- ══ DOCUMENT TITLE & STATUS ══ --}}
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
                         <tr>
-                            <td width="50%">
-                                <h4>Quotation To:</h4>
-                                <address>
+                            <td width="60%">
+                                <h3 style="margin:0; font-size:20px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#1a5c1a;">
+                                    Exhibition Quotation
+                                </h3>
+                                <div style="margin-top:4px; font-size:12px; color:#555;">
+                                    <strong>Quotation No:</strong>
+                                    {{ $quotation->quotation_number ?? '#'.$quotation->id }}
+                                </div>
+                                <div style="font-size:12px; color:#555;">
+                                    <strong>Date:</strong>
+                                    {{ $quotation->create_date ? $quotation->create_date->format('d F Y') : 'N/A' }}
+                                </div>
+                            </td>
+                            <td width="40%" style="text-align:right; vertical-align:top;">
+                                @php
+                                    $statusLabel = match(strtolower($quotation->status ?? 'pending')) {
+                                        'approved'  => ['label' => 'APPROVED BY ADMIN',      'class' => 'badge-success'],
+                                        'rejected'  => ['label' => 'REJECTED',               'class' => 'badge-danger'],
+                                        'accepted'  => ['label' => 'CONFIRMED BY EXHIBITOR', 'class' => 'badge-info'],
+                                        default     => ['label' => 'PENDING ADMIN REVIEW',   'class' => 'badge-warning'],
+                                    };
+                                @endphp
+                                <span class="badge {{ $statusLabel['class'] }}" style="font-size:13px; padding:8px 14px; border-radius:4px;">
+                                    {{ $statusLabel['label'] }}
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                    <hr style="border-color:#ddd; margin-bottom:14px;">
+
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="50%" style="vertical-align:top;">
+                                <h5 style="font-weight:700; border-bottom:2px solid #1a5c1a; padding-bottom:4px; color:#1a5c1a;">QUOTATION TO:</h5>
+                                <address style="font-size:13px; line-height:1.8; margin:0;">
                                     <strong>{{ $quotation->client->name ?? 'N/A' }}</strong><br>
                                     {{ $quotation->client->company_name ?? '' }}<br>
                                     {{ $quotation->client->address ?? '' }}<br>
-                                    {{ $quotation->client->phone ?? '' }}<br>
-                                    {{ $quotation->client->email ?? '' }}<br>
+                                    @if($quotation->client->phone ?? false)<strong>Tel:</strong> {{ $quotation->client->phone }}<br>@endif
+                                    @if($quotation->client->email ?? false)<strong>Email:</strong> {{ $quotation->client->email }}<br>@endif
                                 </address>
                             </td>
-                            <td width="50%">
-                                <h2>Quotation Info</h2>
-                                <table class="table table-striped table-bordered" width="100%">
+                            <td width="50%" style="vertical-align:top; padding-left:20px;">
+                                <h5 style="font-weight:700; border-bottom:2px solid #1a5c1a; padding-bottom:4px; color:#1a5c1a;">QUOTATION DETAILS:</h5>
+                                <table class="table table-bordered" width="100%" style="font-size:12px;">
                                     <tbody>
                                         <tr>
-                                            <th><b>Quotation ID:</b></th>
-                                            <td>#{{ $quotation->id }}</td>
+                                            <th style="background:#f5f5f5; width:45%;">Quotation No:</th>
+                                            <td><strong>{{ $quotation->quotation_number ?? '#'.$quotation->id }}</strong></td>
                                         </tr>
                                         <tr>
-                                            <th><b>Payment Type:</b></th>
+                                            <th style="background:#f5f5f5;">Date Issued:</th>
+                                            <td>{{ $quotation->create_date ? $quotation->create_date->format('d M Y') : 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th style="background:#f5f5f5;">Payment Type:</th>
                                             <td>{{ $quotation->paymentType->name ?? 'N/A' }}</td>
                                         </tr>
                                         <tr>
-                                            <th><b>Payment Currency:</b></th>
-                                            <td>{{ $quotation->paymentCurrency->name ?? 'N/A' }}</td>
+                                            <th style="background:#f5f5f5;">Currency:</th>
+                                            <td>{{ $quotation->paymentCurrency->name ?? 'USD' }}</td>
                                         </tr>
                                         <tr>
-                                            <th><b>Created Date:</b></th>
-                                            <td>#{{ Carbon\Carbon::parse($quotation->create_date)->format('jS F Y ') }}
+                                            <th style="background:#f5f5f5;">Status:</th>
+                                            <td>
+                                                <span class="badge {{ $statusLabel['class'] }}">{{ $statusLabel['label'] }}</span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -408,7 +452,9 @@
                             </td>
                         </tr>
                     </table>
-                    <br /><br />
+                    <br>
+
+
 
                     <table class="table table-striped table-bordered">
                         <thead>

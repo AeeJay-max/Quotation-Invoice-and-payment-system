@@ -227,6 +227,22 @@ class SettingsController extends Controller
 
                 Settings::updateOrCreate(
                     [
+                        'type' => 'email', 'label' => 'acc_type',
+                    ], [
+                        'type' => 'email', 'label' => 'acc_type', 'description' => $request->acc_type,
+                    ]
+                );
+
+                Settings::updateOrCreate(
+                    [
+                        'type' => 'email', 'label' => 'acc_currency',
+                    ], [
+                        'type' => 'email', 'label' => 'acc_currency', 'description' => $request->acc_currency,
+                    ]
+                );
+
+                Settings::updateOrCreate(
+                    [
                         'type' => 'email', 'label' => 'show_bank',
                     ], [
                         'type' => 'email', 'label' => 'show_bank', 'description' => $request->show_bank ? 1 : 0,
@@ -342,6 +358,13 @@ class SettingsController extends Controller
                     ]
                 );
 
+                Settings::updateOrCreate(
+                    [
+                        'type' => 'system', 'label' => 'app_postal_address',
+                    ], [
+                        'type' => 'system', 'label' => 'app_postal_address', 'description' => $request->app_postal_address,
+                    ]
+                );
                 if ($request->hasfile('icon')) {
                     $file = $request->file('icon');
                     $file_name = time() . $file->getClientOriginalName();
