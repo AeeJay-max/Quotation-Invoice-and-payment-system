@@ -16,8 +16,9 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::withCount(['spaces', 'standTypes', 'bookings'])->latest()->paginate(15);
-        return view('admin.events.index', compact('events'));
+        $events        = Event::withCount(['spaces', 'standTypes', 'bookings'])->latest()->paginate(15);
+        $deletedEvents = Event::onlyTrashed()->withCount(['bookings'])->latest('deleted_at')->get();
+        return view('admin.events.index', compact('events', 'deletedEvents'));
     }
 
     public function create()
@@ -179,5 +180,36 @@ class EventController extends Controller
         AttendeeType::create($validated);
 
         return back()->with('success', 'Attendee ticket type added.');
+    }
+
+    public function destroy($id)
+    {
+        $event = Event::findOrFail($id);
+
+        // Prevent deletion if there are active (non-cancelled) bookings
+        $activeBookings = $event->bookings()
+            ->whereNotIn('status', ['cancelled', 'rejected'])
+            ->count();
+
+        if ($activeBookings > 0) {
+            return back()->with('error',
+                "Cannot delete '{$event->name}' — it has {$activeBookings} active booking(s). "
+                . "Cancel all bookings first, or change the event status to 'cancelled' instead."
+            );
+        }
+
+        $event->delete(); // soft delete — preserved in history
+
+        return redirect()->route('admin.events.index')
+            ->with('success', "Event '{$event->name}' has been removed from the public listing and saved to history.");
+    }
+
+    public function restore($id)
+    {
+        $event = Event::onlyTrashed()->findOrFail($id);
+        $event->restore();
+
+        return redirect()->route('admin.events.index')
+            ->with('success', "Event '{$event->name}' has been restored and is now active again.");
     }
 }

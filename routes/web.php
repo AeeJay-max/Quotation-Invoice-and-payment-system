@@ -131,6 +131,8 @@ Route::group([], function () {
             Route::post('events/{id}/furniture', [\App\Http\Controllers\EventController::class, 'storeFurniture'])->name('events.furniture.store');
             Route::post('events/{id}/service', [\App\Http\Controllers\EventController::class, 'storeService'])->name('events.service.store');
             Route::post('events/{id}/attendee-type', [\App\Http\Controllers\EventController::class, 'storeAttendeeType'])->name('events.attendee-type.store');
+            Route::delete('events/{id}', [\App\Http\Controllers\EventController::class, 'destroy'])->name('events.destroy');
+            Route::post('events/{id}/restore', [\App\Http\Controllers\EventController::class, 'restore'])->name('events.restore');
 
             // Admin Confirmed Bookings
             Route::get('bookings', [\App\Http\Controllers\AdminBookingController::class, 'index'])->name('bookings.index');
