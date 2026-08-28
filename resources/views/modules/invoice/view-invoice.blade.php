@@ -447,26 +447,42 @@
                         <tbody>
                             <tr>
                                 <td width="40%">
-                                    @if ($invoice->payment_status === 1)
+                                    @php
+                                        // Determine stamp from VERIFIED payments (authoritative)
+                                        $stampVerifiedPaid = $verified_paid ?? 0;
+                                        $stampOutstanding  = $outstanding_balance ?? floatval($invoice->total ?? 0);
+                                        $invoiceGrandTotal = ($invoice->vat / 100 + 1) * ($total_price - $invoice->discount);
+
+                                        // Explicit cancellation overrides all
+                                        $isCancelled = $invoice->payment_status == 3;
+
+                                        if ($isCancelled) {
+                                            $stampKey = 'cancelled';
+                                        } elseif ($stampVerifiedPaid <= 0) {
+                                            $stampKey = 'unpaid';
+                                        } elseif ($stampOutstanding > 0) {
+                                            $stampKey = 'partially_paid';
+                                        } else {
+                                            $stampKey = 'paid';
+                                        }
+                                    @endphp
+
+                                    @if($stampKey === 'paid')
+                                        <div style="display:inline-block; border:4px solid #28a745; border-radius:8px; padding:6px 18px; margin:20px 0 20px 20px;">
+                                            <span style="color:#28a745; font-size:22px; font-weight:900; letter-spacing:2px; text-transform:uppercase;">✔ PAID</span>
+                                        </div>
+                                    @elseif($stampKey === 'partially_paid')
+                                        <div style="display:inline-block; border:4px solid #fd7e14; border-radius:8px; padding:6px 18px; margin:20px 0 20px 20px;">
+                                            <span style="color:#fd7e14; font-size:16px; font-weight:900; letter-spacing:1px; text-transform:uppercase;">PARTIALLY PAID</span>
+                                        </div>
+                                    @elseif($stampKey === 'cancelled')
                                         <img style="margin:20px 0 20px 20px;"
-                                            src="{{ asset('assets/invoice/img/paid.png') }}" alt="paid" width="200"
-                                            height="80">
-                                    @elseif($invoice->payment_status === 2)
-                                        <img style="margin:20px 0 20px 20px;"
-                                            src="{{ asset('assets/invoice/img/unpaid.png') }}" alt="unpaid" width="200"
-                                            height="80">
-                                    @elseif($invoice->payment_status === 3)
-                                        <img style="margin:20px 0 20px 20px;"
-                                            src="{{ asset('assets/invoice/img/canceled.png') }}" alt="canceled"
+                                            src="{{ asset('assets/invoice/img/canceled.png') }}" alt="cancelled"
                                             width="200" height="80">
-                                    @elseif($invoice->payment_status === 4)
+                                    @else
                                         <img style="margin:20px 0 20px 20px;"
-                                            src="{{ asset('assets/invoice/img/due.png') }}" alt="paid" width="200"
-                                            height="80">
-                                    @elseif($invoice->payment_status === 5)
-                                        <img style="margin:20px 0 20px 20px;"
-                                            src="{{ asset('assets/invoice/img/due.png') }}" alt="paid" width="200"
-                                            height="80">
+                                            src="{{ asset('assets/invoice/img/unpaid.png') }}" alt="unpaid"
+                                            width="200" height="80">
                                     @endif
                                 </td>
                                 <td width="40%" style="float: right;">
@@ -487,34 +503,50 @@
                                                 <td class="table-amount text-right">
                                                     {{ number_format($invoice->discount, 2) }}</td>
                                             </tr>
-                                            <tr>
-                                                <th class="table-label">Grand Total</th>
-                                                <td class="table-amount text-right">{{ number_format(($invoice->vat / 100 + 1) * ($total_price - $invoice->discount), 2) }}
+                                            <tr class="table-dark">
+                                                <th class="table-label font-weight-bold">Grand Total</th>
+                                                <td class="table-amount text-right font-weight-bold">{{ number_format($invoiceGrandTotal, 2) }}
                                                 </td>
                                             </tr>
-                                            @if(isset($verified_paid) && $verified_paid > 0)
+                                            @if($stampVerifiedPaid > 0)
                                             <tr class="table-success">
-                                                <th class="table-label text-success">Verified Paid</th>
+                                                <th class="table-label text-success">Total Verified Paid</th>
                                                 <td class="table-amount text-right text-success font-weight-bold">
-                                                    {{ number_format($verified_paid, 2) }}
+                                                    {{ number_format($stampVerifiedPaid, 2) }}
                                                 </td>
                                             </tr>
-                                            <tr class="{{ ($outstanding_balance ?? 0) <= 0 ? 'table-success' : 'table-danger' }}">
-                                                <th class="table-label {{ ($outstanding_balance ?? 0) <= 0 ? 'text-success' : 'text-danger' }}">Outstanding Balance</th>
-                                                <td class="table-amount text-right font-weight-bold {{ ($outstanding_balance ?? 0) <= 0 ? 'text-success' : 'text-danger' }}">
-                                                    {{ number_format($outstanding_balance ?? 0, 2) }}
-                                                    @if(($outstanding_balance ?? 0) <= 0)
-                                                        <span class="badge badge-success ml-1">PAID</span>
+                                            <tr class="{{ $stampOutstanding <= 0 ? 'table-success' : 'table-warning' }}">
+                                                <th class="table-label {{ $stampOutstanding <= 0 ? 'text-success' : 'text-danger' }} font-weight-bold">Outstanding Balance</th>
+                                                <td class="table-amount text-right font-weight-bold {{ $stampOutstanding <= 0 ? 'text-success' : 'text-danger' }}">
+                                                    {{ number_format($stampOutstanding, 2) }}
+                                                    @if($stampOutstanding <= 0)
+                                                        <span class="badge badge-success ml-1">PAID IN FULL</span>
                                                     @endif
                                                 </td>
                                             </tr>
                                             @endif
+                                            <tr>
+                                                <th class="table-label">Payment Status</th>
+                                                <td class="table-amount text-right">
+                                                    @if($stampKey === 'paid')
+                                                        <span class="badge badge-success px-2 py-1" style="font-size:0.85rem;">PAID</span>
+                                                    @elseif($stampKey === 'partially_paid')
+                                                        <span class="badge badge-warning px-2 py-1 text-dark" style="font-size:0.85rem;">PARTIALLY PAID</span>
+                                                    @elseif($stampKey === 'cancelled')
+                                                        <span class="badge badge-secondary px-2 py-1" style="font-size:0.85rem;">CANCELLED</span>
+                                                    @else
+                                                        <span class="badge badge-danger px-2 py-1" style="font-size:0.85rem;">UNPAID</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
                                         </tfoot>
                                     </table>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+
+
 
                     <table>
                         <tr>
@@ -539,117 +571,41 @@
                         </tr>
                     </table>
                     <br>
-                    <table width="100%">
-                        <tbody>
-                            <tr>
-
-                                <td width="30%">
-                                    @if (config('config.EMAIL.show_bank') == 1)
-                                        <table width="100%">
-                                            <tr>
-                                                <td>
-                                                    <h6>Bank Details</h6>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>Bank</th>
-                                                <td>{{ config('config.EMAIL.bank') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Branch</th>
-                                                <td>{{ config('config.EMAIL.branch') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>ACC Name:</th>
-                                                <td>{{ config('config.EMAIL.acc_name') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Acc no:</th>
-                                                <td>{{ config('config.EMAIL.acc_number') }}</td>
-                                            </tr>
-                                        </table>
-                                    @endif
-                                </td>
-
-                                @if (config('config.EMAIL.show_nostro_1') == 1)
-                                    <td width="30%">
-                                        <table width="100%">
-                                            <tr>
-                                                <td>
-                                                    <h6>Nostro Bank</h6>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>Bank</th>
-                                                <td>{{ config('config.EMAIL.nostro_1_bank') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Branch</th>
-                                                <td>{{ config('config.EMAIL.nostro_1_branch') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>ACC Name:</th>
-                                                <td>{{ config('config.EMAIL.nostro_1_acc_name') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Acc no:</th>
-                                                <td>{{ config('config.EMAIL.nostro_1_acc_number') }}</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                @endif
-
-                                @if (config('config.EMAIL.show_nostro_2') == 1)
-                                    <td width="30%">
-                                        <table width="100%">
-                                            <tr>
-                                                <td>
-                                                    <h6>Nostro Bank</h6>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>Bank</th>
-                                                <td>{{ config('config.EMAIL.nostro_2_bank') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Branch</th>
-                                                <td>{{ config('config.EMAIL.nostro_2_branch') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>ACC Name:</th>
-                                                <td>{{ config('config.EMAIL.nostro_2_acc_name') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Acc no:</th>
-                                                <td>{{ config('config.EMAIL.nostro_2_acc_number') }}</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                @endif
-
-                                @if (config('config.EMAIL.show_eco') == 1)
-                                    <td width="30%" style="float: right;">
-                                        <table width="100%">
-                                            <tr>
-                                                <td>
-                                                    <h6>Eocash Details</h6>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>Ecocash #</th>
-                                                <td>{{ config('config.EMAIL.ecco_number') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Ecocash Name</th>
-                                                <td>{{ config('config.EMAIL.ecco_name') }}</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                @endif
-
-                            </tr>
-                        </tbody>
-                    </table>
+                    {{-- ══ OFFICIAL BANKING DETAILS ══ --}}
+                    <div style="border:1px solid #ddd; border-radius:4px; overflow:hidden; margin-bottom:16px;">
+                        <div style="background:#1a5c1a; padding:8px 14px;">
+                            <strong style="color:#fff; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">
+                                Payment Instructions — Official Banking Details
+                            </strong>
+                        </div>
+                        <div style="display:flex; padding:12px;">
+                            <div style="flex:1; padding-right:16px;">
+                                <table class="table table-sm mb-0" style="font-size:13px;">
+                                    <tr><th style="width:45%; padding:4px 0; color:#555;">Account Name</th>
+                                        <td style="padding:4px 6px; font-weight:600;">Sports and Recreation</td></tr>
+                                    <tr><th style="padding:4px 0; color:#555;">Bank</th>
+                                        <td style="padding:4px 6px; font-weight:600;">EmpowerBank</td></tr>
+                                    <tr><th style="padding:4px 0; color:#555;">Account Number</th>
+                                        <td style="padding:4px 6px; font-weight:700; color:#1a5c1a;">953869211833</td></tr>
+                                    <tr><th style="padding:4px 0; color:#555;">Account Type</th>
+                                        <td style="padding:4px 6px;">Corporate Nostro FCA (Domestic) USD</td></tr>
+                                    <tr><th style="padding:4px 0; color:#555;">Currency</th>
+                                        <td style="padding:4px 6px; font-weight:600;">USD</td></tr>
+                                </table>
+                            </div>
+                            <div style="flex:1; border-left:1px solid #eee; padding-left:16px; font-size:12px; color:#555;">
+                                <p style="margin:0 0 6px 0;">
+                                    <strong>Payment Reference:</strong> Use Invoice No.
+                                    <strong>#{{ $invoice->id }}</strong> as your payment reference.
+                                </p>
+                                <p style="margin:0;">
+                                    Submit proof of payment via the Exhibitor Portal or email
+                                    <strong>{{ $settings['app_email'] ?? 'minofsportandarts@gmail.com' }}</strong>.
+                                    Payments are confirmed only after Ministry Finance verification.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
                     <br>
                     <table width="100%">
@@ -660,23 +616,15 @@
                                     Client Signature
                                 </td>
                                 <td width="40%">
-
                                 </td>
                                 <td width="30%">
-                                    @if (\Illuminate\Support\Facades\Auth::check() && \Illuminate\Support\Facades\Auth::user()->signature_path)
-                                        <img style="width: 200px;height: 30px"
-                                            src="{{ asset(\Illuminate\Support\Facades\Auth::user()->signature_path) }}">
-                                    @elseif($invoice->user->signature_path)
-                                        <img style="width: 200px;height: 30px"
-                                            src="{{ asset($invoice->user->signature_path) }}">
-                                    @endif
                                     <hr>
-                                    Authority Signature
+                                    Authorised Signature
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    <p style="text-align: center;font-style: italic"><small>{{$settings['app_moto']}}</small></p>
+                    <p style="text-align: center;font-style: italic"><small>{{ $settings['app_moto'] ?? '' }}</small></p>
                 </div>
             </div>
         </div>

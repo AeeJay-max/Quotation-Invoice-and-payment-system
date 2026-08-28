@@ -204,25 +204,37 @@
 <body>
 <div id="page-wrap">
     <div id="page-wrap-inner">
-        <table width="100%">
+        {{-- ══ MINISTRY OFFICIAL HEADER ══ --}}
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:0;">
             <tr>
-                <td width="40%">
-                    <img style="width: 150px;height: auto" src="{{ public_path($settings['logo'] ?? '') }}" class="">
+                <td width="18%" style="vertical-align:middle; padding-right:12px;">
+                    <img src="{{ public_path($settings['logo'] ?? 'assets/files/ministry-logo.png') }}"
+                         alt="Ministry Logo"
+                         style="width:100px; height:auto; display:block;">
                 </td>
-                <td width="60%" class="company-details">
-                    <span style="font-size: 20px;"><strong>{{ $settings['app_name'] ?? '' }}</strong></span>
-                    <span><strong>Address:  </strong>{{ $settings['app_address'] ?? '' }}</span>
-                    <span>
-                                    <strong>Email(s):  </strong>
-                                    {!! implode('<br>', explode(',', $settings['app_email'])) !!}
-                                </span>
-                    <span> <strong>Phone Number(s):  </strong>{!! implode('<br>', explode(',', $settings['app_phone'])) !!}</span>
+                <td width="82%" style="vertical-align:middle;">
+                    <div style="font-size:15px; font-weight:700; color:#1a5c1a; text-transform:uppercase; letter-spacing:0.5px; line-height:1.3;">
+                        {{ $settings['app_name'] ?? 'Ministry of Sports, Recreation, Arts and Culture' }}
+                    </div>
+                    <div style="font-size:11px; color:#444; margin-top:4px; line-height:1.7;">
+                        {{ $settings['app_address'] ?? 'Chinengundu Mashayamombe Building 95, Cnr N. Mandela & S. V. Muzenda Street, Harare' }}<br>
+                        {{ $settings['app_postal_address'] ?? 'P.O. Box HR 480 Harare' }}<br>
+                        <strong>Email:</strong> {{ $settings['app_email'] ?? 'minofsportandarts@gmail.com' }}
+                        &nbsp;|&nbsp;
+                        <strong>Tel:</strong> {{ $settings['app_phone'] ?? '+263242708345' }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin:0;">
+            <tr>
+                <td style="padding:0;">
+                    <div style="height:3px; background:#1a5c1a; margin-bottom:3px;"></div>
+                    <div style="height:1px; background:#ccc; margin-bottom:12px;"></div>
                 </td>
             </tr>
         </table>
 
-
-        <hr>
         <table width="100%">
             <tr>
                 <td width="50%">
@@ -287,24 +299,42 @@
             @endforeach
             </tbody>
         </table>
+        @php
+            // Determine stamp from verified amounts passed from controller
+            $pdfVerifiedPaid   = $verified_paid ?? 0;
+            $pdfOutstanding    = $outstanding_balance ?? floatval($invoice->total ?? 0);
+            $pdfGrandTotal     = ($invoice->vat / 100 + 1) * ($total_price - $invoice->discount);
+            $isCancelled       = $invoice->payment_status == 3;
+
+            if ($isCancelled) {
+                $pdfStamp = 'cancelled';
+            } elseif ($pdfVerifiedPaid <= 0) {
+                $pdfStamp = 'unpaid';
+            } elseif ($pdfOutstanding > 0) {
+                $pdfStamp = 'partially_paid';
+            } else {
+                $pdfStamp = 'paid';
+            }
+        @endphp
         <table width="100%">
             <tbody>
             <tr>
-                 <td width="40%">
-                    @if($invoice->payment_status===1)
-                        <img style="margin:20px 0 20px 20px;" src="{{ public_path('assets/invoice/img/paid.png') }}" alt="paid" width="200" height="80" >
-                    @elseif($invoice->payment_status===2)
-                        <img style="margin:20px 0 20px 20px;" src="{{ public_path('assets/invoice/img/unpaid.png') }}" alt="unpaid" width="200" height="80" >
-                    @elseif($invoice->payment_status===3)
-                        <img style="margin:20px 0 20px 20px;" src="{{ public_path('assets/invoice/img/canceled.png') }}" alt="canceled" width="200" height="80" >
-                    @elseif($invoice->payment_status===4)
-                        <img style="margin:20px 0 20px 20px;" src="{{ public_path('assets/invoice/img/due.png') }}" alt="paid" width="200" height="80" >
-                    @elseif($invoice->payment_status===5)
-                        <img style="margin:20px 0 20px 20px;" src="{{ public_path('assets/invoice/img/due.png') }}" alt="paid" width="200" height="80" >
+                 <td width="40%" style="vertical-align:middle;">
+                    @if($pdfStamp === 'paid')
+                        <div style="display:inline-block; border:4px solid #28a745; border-radius:6px; padding:6px 16px; margin:16px 0;">
+                            <span style="color:#28a745; font-size:20px; font-weight:900; letter-spacing:2px; text-transform:uppercase;">✔ PAID</span>
+                        </div>
+                    @elseif($pdfStamp === 'partially_paid')
+                        <div style="display:inline-block; border:4px solid #fd7e14; border-radius:6px; padding:6px 14px; margin:16px 0;">
+                            <span style="color:#fd7e14; font-size:15px; font-weight:900; letter-spacing:1px; text-transform:uppercase;">PARTIALLY PAID</span>
+                        </div>
+                    @elseif($pdfStamp === 'cancelled')
+                        <img style="margin:16px 0;" src="{{ public_path('assets/invoice/img/canceled.png') }}" alt="cancelled" width="180" height="70">
+                    @else
+                        <img style="margin:16px 0;" src="{{ public_path('assets/invoice/img/unpaid.png') }}" alt="unpaid" width="180" height="70">
                     @endif
                 </td>
                 <td width="40%" style="float: right;">
-
                     <table class="table table-striped no-border">
                         <tbody>
                         <tr>
@@ -319,9 +349,29 @@
                             <th class="table-label">Discount</th>
                             <td width="30%" class="table-amount text-right">{{ number_format($invoice->discount, 2)}}</td>
                         </tr>
-                        <tr>
+                        <tr style="font-weight:bold; background:#eee;">
                             <th class="table-label">Grand Total</th>
-                            <td width="30%" class="table-amount text-right">{{ number_format($total_price, 2) }}</td>
+                            <td width="30%" class="table-amount text-right">{{ number_format($pdfGrandTotal, 2) }}</td>
+                        </tr>
+                        @if($pdfVerifiedPaid > 0)
+                        <tr style="color:#28a745; font-weight:bold;">
+                            <th class="table-label">Total Verified Paid</th>
+                            <td width="30%" class="table-amount text-right">{{ number_format($pdfVerifiedPaid, 2) }}</td>
+                        </tr>
+                        <tr style="font-weight:bold; color:{{ $pdfOutstanding > 0 ? '#c0392b' : '#27ae60' }};">
+                            <th class="table-label">Outstanding Balance</th>
+                            <td width="30%" class="table-amount text-right">{{ number_format($pdfOutstanding, 2) }}</td>
+                        </tr>
+                        @endif
+                        <tr>
+                            <th class="table-label">Status</th>
+                            <td width="30%" class="table-amount text-right" style="font-weight:bold; text-transform:uppercase;">
+                                @if($pdfStamp==='paid') PAID
+                                @elseif($pdfStamp==='partially_paid') PARTIALLY PAID
+                                @elseif($pdfStamp==='cancelled') CANCELLED
+                                @else UNPAID
+                                @endif
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -343,7 +393,7 @@
             <tr>
                 <td width="100%">
                     @if($invoice->terms_condition)
-                        <b>Terms & Conditions:</b>
+                        <b>Terms &amp; Conditions:</b>
                         <p class="text-muted well well-sm no-shadow" style="">
                             {{ $invoice->terms_condition }}
                         </p>
@@ -352,108 +402,42 @@
             </tr>
         </table>
         <br>
-        <table width="100%">
-            <tbody>
-                <tr>
 
-                    <td width="30%">
-                        @if(config('config.EMAIL.show_bank') == 1)
-                        <table width="100%">
-                            <tr>
-                                <td><h6>Bank Details</h6></td>
-                            </tr>
-                            <tr>
-                                <th>Bank</th>
-                                <td>{{config('config.EMAIL.bank')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Branch</th>
-                                <td>{{config('config.EMAIL.branch')}}</td>
-                            </tr>
-                            <tr>
-                                <th>ACC Name:</th>
-                                <td>{{config('config.EMAIL.acc_name')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Acc no:</th>
-                                <td>{{config('config.EMAIL.acc_number')}}</td>
-                            </tr>
-                        </table>
-                        @endif
-                    </td>
-
-                    @if(config('config.EMAIL.show_nostro_1') == 1)
-                    <td width="30%">
-                        <table width="100%">
-                            <tr>
-                                <td><h6>Nostro Bank</h6></td>
-                            </tr>
-                            <tr>
-                                <th>Bank</th>
-                                <td>{{config('config.EMAIL.nostro_1_bank')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Branch</th>
-                                <td>{{config('config.EMAIL.nostro_1_branch')}}</td>
-                            </tr>
-                            <tr>
-                                <th>ACC Name:</th>
-                                <td>{{config('config.EMAIL.nostro_1_acc_name')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Acc no:</th>
-                                <td>{{config('config.EMAIL.nostro_1_acc_number')}}</td>
-                            </tr>
-                        </table>
-                    </td>
-                    @endif
-
-                    @if(config('config.EMAIL.show_nostro_2') == 1)
-                    <td width="30%">
-                        <table width="100%">
-                            <tr>
-                                <td><h6>Nostro Bank</h6></td>
-                            </tr>
-                            <tr>
-                                <th>Bank</th>
-                                <td>{{config('config.EMAIL.nostro_2_bank')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Branch</th>
-                                <td>{{config('config.EMAIL.nostro_2_branch')}}</td>
-                            </tr>
-                            <tr>
-                                <th>ACC Name:</th>
-                                <td>{{config('config.EMAIL.nostro_2_acc_name')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Acc no:</th>
-                                <td>{{config('config.EMAIL.nostro_2_acc_number')}}</td>
-                            </tr>
-                        </table>
-                    </td>
-                    @endif
-
-                    @if(config('config.EMAIL.show_eco') == 1)
-                    <td width="30%" style="float: right;">
-                        <table width="100%">
-                            <tr>
-                                <td><h6>Eocash Details</h6></td>
-                            </tr>
-                            <tr>
-                                <th>Ecocash #</th>
-                                <td>{{config('config.EMAIL.ecco_number')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Ecocash Name</th>
-                                <td>{{config('config.EMAIL.ecco_name')}}</td>
-                            </tr>
-                        </table>
-                    </td>
-                    @endif
-
-                </tr>
-            </tbody>
+        {{-- ══ OFFICIAL BANKING DETAILS ══ --}}
+        <table width="100%" style="border:1px solid #ddd; border-radius:4px; background:#f9f9f9;">
+            <tr>
+                <td colspan="2" style="padding:6px 10px; background:#1a5c1a;">
+                    <span style="color:#fff; font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">
+                        Payment Instructions — Official Banking Details
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td width="50%" style="padding:8px 12px; vertical-align:top;">
+                    <table width="100%">
+                        <tr><th style="padding:4px 0; color:#555; white-space:nowrap;">Account Name:</th>
+                            <td style="padding:4px 6px; font-weight:600;">Sports and Recreation</td></tr>
+                        <tr><th style="padding:4px 0; color:#555; white-space:nowrap;">Bank:</th>
+                            <td style="padding:4px 6px; font-weight:600;">EmpowerBank</td></tr>
+                        <tr><th style="padding:4px 0; color:#555; white-space:nowrap;">Account Number:</th>
+                            <td style="padding:4px 6px; font-weight:700; color:#1a5c1a;">953869211833</td></tr>
+                        <tr><th style="padding:4px 0; color:#555; white-space:nowrap;">Account Type:</th>
+                            <td style="padding:4px 6px;">Corporate Nostro FCA (Domestic) USD</td></tr>
+                        <tr><th style="padding:4px 0; color:#555; white-space:nowrap;">Currency:</th>
+                            <td style="padding:4px 6px; font-weight:600;">USD</td></tr>
+                    </table>
+                </td>
+                <td width="50%" style="padding:8px 12px; vertical-align:top; border-left:1px solid #ddd;">
+                    <p style="font-size:11px; color:#555; margin:0 0 6px 0;">
+                        <strong>Payment Reference:</strong> Please use your Invoice No. <strong>#{{ $invoice->id }}</strong> as the payment reference.
+                    </p>
+                    <p style="font-size:11px; color:#555; margin:0;">
+                        After making payment, submit your proof of payment through the Exhibitor Portal or email to
+                        <strong>{{ $settings['app_email'] ?? 'minofsportandarts@gmail.com' }}</strong>.
+                        Payments are only confirmed once verified by the Ministry Finance team.
+                    </p>
+                </td>
+            </tr>
         </table>
 
         <br>
@@ -465,20 +449,17 @@
                     Client Signature
                 </td>
                 <td width="40%">
-
                 </td>
                 <td width="30%">
-                    {{-- @if(\Illuminate\Support\Facades\Auth::user()->signature_path)
-                        <img style="width: 200px;height: 30px" src="{{asset(\Illuminate\Support\Facades\Auth::user()->signature_path)}}">
-                    @endif --}}
                     <hr>
-                    Authority Signature
+                    Authorised Signature
                 </td>
             </tr>
             </tbody>
         </table>
-        <p style="text-align: center;font-style: italic"><small>{{$settings['app_moto']}}</small></p>
+        <p style="text-align: center;font-style: italic"><small>{{ $settings['app_moto'] ?? '' }}</small></p>
     </div>
 </div>
 </body>
+</html>
 </html>

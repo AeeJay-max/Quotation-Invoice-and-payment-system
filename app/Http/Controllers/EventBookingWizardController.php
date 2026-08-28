@@ -201,7 +201,18 @@ class EventBookingWizardController extends Controller
 
         $bankDetails = \App\Models\Settings::where('type', 'email')->pluck('description', 'label')->toArray();
 
-        return view('public.quotation-view', compact('quotation', 'bankDetails'));
+        // Ministry branding with hardcoded fallbacks
+        $dbSettings     = \App\Models\Settings::where('type', 'general')->pluck('description', 'label')->toArray();
+        $global_settings = array_merge([
+            'app_name'           => 'Ministry of Sports, Recreation, Arts and Culture',
+            'app_address'        => 'Chinengundu Mashayamombe Building 95, Cnr N. Mandela & S. V. Muzenda Street, Harare',
+            'app_postal_address' => 'P.O. Box HR 480 Harare',
+            'app_email'          => 'minofsportandarts@gmail.com',
+            'app_phone'          => '+263242708345',
+            'logo'               => 'assets/files/ministry-logo.png',
+        ], $dbSettings);
+
+        return view('public.quotation-view', compact('quotation', 'bankDetails', 'global_settings'));
     }
 
     public function confirmQuotation($id)

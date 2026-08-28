@@ -407,108 +407,43 @@
             </tr>
         </table>
         <br>
-        <table width="100%">
-            <tbody>
+
+        {{-- ══ OFFICIAL BANKING DETAILS ══ --}}
+        <table width="100%" style="border:1px solid #ddd; border-radius:4px; background:#f9f9f9;">
             <tr>
-
-                <td width="30%">
-                    @if(config('config.EMAIL.show_bank') == 1)
-                        <table width="100%">
-                            <tr>
-                                <td><h6>Bank Details</h6></td>
-                            </tr>
-                            <tr>
-                                <th>Bank</th>
-                                <td>{{config('config.EMAIL.bank')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Branch</th>
-                                <td>{{config('config.EMAIL.branch')}}</td>
-                            </tr>
-                            <tr>
-                                <th>ACC Name:</th>
-                                <td>{{config('config.EMAIL.acc_name')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Acc no:</th>
-                                <td>{{config('config.EMAIL.acc_number')}}</td>
-                            </tr>
-                        </table>
-                    @endif
+                <td colspan="2" style="padding:6px 10px; background:#1a5c1a;">
+                    <span style="color:#fff; font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">
+                        Payment Instructions — Official Banking Details
+                    </span>
                 </td>
-
-                @if(config('config.EMAIL.show_nostro_1') == 1)
-                    <td width="30%">
-                        <table width="100%">
-                            <tr>
-                                <td><h6>Nostro Bank</h6></td>
-                            </tr>
-                            <tr>
-                                <th>Bank</th>
-                                <td>{{config('config.EMAIL.nostro_1_bank')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Branch</th>
-                                <td>{{config('config.EMAIL.nostro_1_branch')}}</td>
-                            </tr>
-                            <tr>
-                                <th>ACC Name:</th>
-                                <td>{{config('config.EMAIL.nostro_1_acc_name')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Acc no:</th>
-                                <td>{{config('config.EMAIL.nostro_1_acc_number')}}</td>
-                            </tr>
-                        </table>
-                    </td>
-                @endif
-
-                @if(config('config.EMAIL.show_nostro_2') == 1)
-                    <td width="30%">
-                        <table width="100%">
-                            <tr>
-                                <td><h6>Nostro Bank</h6></td>
-                            </tr>
-                            <tr>
-                                <th>Bank</th>
-                                <td>{{config('config.EMAIL.nostro_2_bank')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Branch</th>
-                                <td>{{config('config.EMAIL.nostro_2_branch')}}</td>
-                            </tr>
-                            <tr>
-                                <th>ACC Name:</th>
-                                <td>{{config('config.EMAIL.nostro_2_acc_name')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Acc no:</th>
-                                <td>{{config('config.EMAIL.nostro_2_acc_number')}}</td>
-                            </tr>
-                        </table>
-                    </td>
-                @endif
-
-                @if(config('config.EMAIL.show_eco') == 1)
-                    <td width="30%" style="float: right;">
-                        <table width="100%">
-                            <tr>
-                                <td><h6>Eocash Details</h6></td>
-                            </tr>
-                            <tr>
-                                <th>Ecocash #</th>
-                                <td>{{config('config.EMAIL.ecco_number')}}</td>
-                            </tr>
-                            <tr>
-                                <th>Ecocash Name</th>
-                                <td>{{config('config.EMAIL.ecco_name')}}</td>
-                            </tr>
-                        </table>
-                    </td>
-                @endif
-
             </tr>
-            </tbody>
+            <tr>
+                <td width="50%" style="padding:8px 12px; vertical-align:top;">
+                    <table width="100%">
+                        <tr><th style="padding:4px 0; color:#555; white-space:nowrap;">Account Name:</th>
+                            <td style="padding:4px 6px; font-weight:600;">Sports and Recreation</td></tr>
+                        <tr><th style="padding:4px 0; color:#555; white-space:nowrap;">Bank:</th>
+                            <td style="padding:4px 6px; font-weight:600;">EmpowerBank</td></tr>
+                        <tr><th style="padding:4px 0; color:#555; white-space:nowrap;">Account Number:</th>
+                            <td style="padding:4px 6px; font-weight:700; color:#1a5c1a;">953869211833</td></tr>
+                        <tr><th style="padding:4px 0; color:#555; white-space:nowrap;">Account Type:</th>
+                            <td style="padding:4px 6px;">Corporate Nostro FCA (Domestic) USD</td></tr>
+                        <tr><th style="padding:4px 0; color:#555; white-space:nowrap;">Currency:</th>
+                            <td style="padding:4px 6px; font-weight:600;">USD</td></tr>
+                    </table>
+                </td>
+                <td width="50%" style="padding:8px 12px; vertical-align:top; border-left:1px solid #ddd;">
+                    <p style="font-size:11px; color:#555; margin:0 0 6px 0;">
+                        <strong>Payment Reference:</strong> Please use your Quotation No.
+                        <strong>{{ $quotation->quotation_number ?? '#'.$quotation->id }}</strong> as your payment reference.
+                    </p>
+                    <p style="font-size:11px; color:#555; margin:0;">
+                        After making payment, submit your proof of payment through the Exhibitor Portal or email
+                        <strong>{{ $settings['app_email'] ?? 'minofsportandarts@gmail.com' }}</strong>.
+                        Payments are only confirmed once verified by the Ministry Finance team.
+                    </p>
+                </td>
+            </tr>
         </table>
 
         <br>
@@ -520,20 +455,15 @@
                     Client Signature
                 </td>
                 <td width="40%">
-
                 </td>
                 <td width="30%">
-                    @if(\Illuminate\Support\Facades\Auth::user()->signature_path)
-                        <img style="width: 200px;height: 30px"
-                             src="{{asset(\Illuminate\Support\Facades\Auth::user()->signature_path)}}">
-                    @endif
                     <hr>
-                    Authority Signature
+                    Authorised Signature
                 </td>
             </tr>
             </tbody>
         </table>
-        <p style="text-align: center;font-style: italic"><small>{{$settings['app_moto']}}</small></p>
+        <p style="text-align: center;font-style: italic"><small>{{ $settings['app_moto'] ?? '' }}</small></p>
     </div>
 </div>
 </body>

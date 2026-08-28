@@ -325,9 +325,12 @@ class InvoiceController extends Controller
         }
         $total_price = $total_price * ($invoice->vat / 100 + 1);
         $settings = Settings::where('type', 'system')->pluck('description', 'label');
+        $verified_paid = \App\Models\Payment::where('invoice_id', $invoice->id)
+            ->where('status', 'verified')->sum('amount_verified');
+        $outstanding_balance = max(0, $invoice->total - $verified_paid);
         try {
             $file_name = date('Y-m-d-H-i-s') . "-invoice-" . $invoice->id . '.pdf';
-            $pdf = PDF::loadView('modules.invoice.pdf', compact('invoice', 'total_price', 'settings'));
+            $pdf = PDF::loadView('modules.invoice.pdf', compact('invoice', 'total_price', 'settings', 'verified_paid', 'outstanding_balance'));
             $invoicePath = 'assets/pdf' . '/' . $file_name;
             $pdf->save($invoicePath);
 
@@ -346,14 +349,13 @@ class InvoiceController extends Controller
             $total_price = $total_price + ($item->quantity * $item->unit_price);
         }
         $settings = Settings::where('type', 'system')->pluck('description', 'label');
-        // dd($settings);
         $total_price = $total_price * ($invoice->vat / 100 + 1);
-            $file_name = date('Y-m-d-H-i-s') . "-invoice-" . $invoice->id . '.pdf';
-            $pdf = PDF::loadView('modules.invoice.pdf', compact('invoice', 'total_price', 'settings'));
-            // $invoicePath = 'assets/pdf' . '/' . $file_name;
-            return $pdf->stream($file_name);
-            // return $pdf->stream();
-      
+        $verified_paid = \App\Models\Payment::where('invoice_id', $invoice->id)
+            ->where('status', 'verified')->sum('amount_verified');
+        $outstanding_balance = max(0, $invoice->total - $verified_paid);
+        $file_name = date('Y-m-d-H-i-s') . "-invoice-" . $invoice->id . '.pdf';
+        $pdf = PDF::loadView('modules.invoice.pdf', compact('invoice', 'total_price', 'settings', 'verified_paid', 'outstanding_balance'));
+        return $pdf->stream($file_name);
     }
 
     public function sendFromCron($invoice, $cause = null)

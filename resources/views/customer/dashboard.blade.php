@@ -76,7 +76,7 @@
                 </div>
                 <div class="col-lg-3 col-6">
                     <div class="small-box bg-success">
-                        <div class="inner"><h3>${{ number_format($totalPaid, 2) }}</h3><p>Total Paid</p></div>
+                        <div class="inner"><h3>${{ number_format($totalPaid, 2) }}</h3><p>Verified Paid</p></div>
                         <div class="icon"><i class="fas fa-hand-holding-usd"></i></div>
                     </div>
                 </div>
@@ -93,9 +93,25 @@
                     </div>
                 </div>
             </div>
+
+            @if(($pendingPaymentsCount ?? 0) > 0)
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <i class="fas fa-clock fa-2x mr-3"></i>
+                        <div>
+                            <strong>{{ $pendingPaymentsCount }} payment(s) awaiting admin verification.</strong>
+                            These amounts are not yet counted in your Verified Paid total.
+                            <a href="{{ route('customer.payments.index') }}" class="btn btn-sm btn-warning ml-3">View Payments</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
             
         </div>
     </section>
 </div>
+
 @endsection
 
