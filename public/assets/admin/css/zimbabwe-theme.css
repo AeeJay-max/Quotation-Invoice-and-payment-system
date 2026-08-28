@@ -1,0 +1,224 @@
+/* 
+ * Zimbabwe Government Exhibition Management System Theme
+ * 
+ * Primary Green: #006B3F
+ * Secondary Green: #008C45
+ * Gold / Yellow: #FFD200
+ * Red (Errors): #D40000
+ * Black/Charcoal: #1B1B1B
+ * White: #FFFFFF
+ * Light Background: #F5F7F5
+ * Border/Neutral: #D9DED9
+ */
+
+:root {
+    --zim-green: #006B3F;
+    --zim-green-light: #008C45;
+    --zim-green-dark: #004D2D;
+    --zim-gold: #FFD200;
+    --zim-red: #D40000;
+    --zim-charcoal: #1B1B1B;
+    --zim-bg-light: #F5F7F5;
+    --zim-border: #D9DED9;
+}
+
+/* Base Overrides for AdminLTE classes */
+.bg-primary {
+    background-color: var(--zim-green) !important;
+    color: var(--white) !important;
+}
+
+.text-primary {
+    color: var(--zim-green) !important;
+}
+
+.btn-primary {
+    background-color: var(--zim-green);
+    border-color: var(--zim-green);
+    color: white;
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+    background-color: var(--zim-green-dark) !important;
+    border-color: var(--zim-green-dark) !important;
+}
+
+.btn-outline-primary {
+    color: var(--zim-green);
+    border-color: var(--zim-green);
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:active, .btn-outline-primary:focus {
+    background-color: var(--zim-green);
+    border-color: var(--zim-green);
+    color: white;
+}
+
+/* Warnings mapped to Gold */
+.bg-warning {
+    background-color: var(--zim-gold) !important;
+    color: var(--zim-charcoal) !important;
+}
+
+.text-warning {
+    color: var(--zim-gold) !important;
+}
+
+.btn-warning {
+    background-color: var(--zim-gold);
+    border-color: var(--zim-gold);
+    color: var(--zim-charcoal);
+}
+
+.btn-outline-warning {
+    color: #cca800; /* Darker gold for text visibility */
+    border-color: var(--zim-gold);
+}
+
+.btn-outline-warning:hover, .btn-outline-warning:active, .btn-outline-warning:focus {
+    background-color: var(--zim-gold);
+    border-color: var(--zim-gold);
+    color: var(--zim-charcoal);
+}
+
+/* Dangers mapped to Red */
+.bg-danger {
+    background-color: var(--zim-red) !important;
+}
+
+.text-danger {
+    color: var(--zim-red) !important;
+}
+
+.btn-danger {
+    background-color: var(--zim-red);
+    border-color: var(--zim-red);
+}
+
+.btn-outline-danger {
+    color: var(--zim-red);
+    border-color: var(--zim-red);
+}
+
+.btn-outline-danger:hover, .btn-outline-danger:active, .btn-outline-danger:focus {
+    background-color: var(--zim-red);
+    border-color: var(--zim-red);
+    color: white;
+}
+
+/* Success mapped to Secondary Green */
+.bg-success {
+    background-color: var(--zim-green-light) !important;
+}
+
+.text-success {
+    color: var(--zim-green-light) !important;
+}
+
+.btn-success {
+    background-color: var(--zim-green-light);
+    border-color: var(--zim-green-light);
+}
+
+.btn-outline-success {
+    color: var(--zim-green-light);
+    border-color: var(--zim-green-light);
+}
+
+.btn-outline-success:hover, .btn-outline-success:active, .btn-outline-success:focus {
+    background-color: var(--zim-green-light);
+    border-color: var(--zim-green-light);
+    color: white;
+}
+
+/* Forms */
+.form-control:focus {
+    border-color: var(--zim-green-light);
+    box-shadow: 0 0 0 0.2rem rgba(0, 107, 63, 0.25);
+}
+
+.select2-container--bootstrap4.select2-container--focus .select2-selection {
+    border-color: var(--zim-green-light);
+    box-shadow: 0 0 0 0.2rem rgba(0, 107, 63, 0.25);
+}
+
+/* Tables */
+.table thead.thead-dark th {
+    background-color: var(--zim-charcoal);
+    border-color: var(--zim-charcoal);
+}
+
+.table thead.thead-light th {
+    background-color: var(--zim-border);
+    color: var(--zim-charcoal);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 107, 63, 0.05); /* very subtle light green */
+}
+
+/* Sidebar Active Navigation State */
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active,
+.sidebar-light-primary .nav-sidebar > .nav-item > .nav-link.active {
+    background-color: var(--zim-green) !important;
+    color: #ffffff !important;
+    border-left: 4px solid var(--zim-gold);
+    font-weight: 600;
+}
+
+/* Sidebar Hover Navigation State */
+.nav-sidebar .nav-item > .nav-link:hover {
+    background-color: rgba(0, 107, 63, 0.1) !important; /* Slight green tint */
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+/* Dropdown Sub-menu Active State */
+.nav-sidebar .nav-treeview > .nav-item > .nav-link.active {
+    background-color: rgba(0, 107, 63, 0.15) !important;
+    color: var(--zim-green) !important;
+    font-weight: 600;
+    border-left: 2px solid var(--zim-green);
+}
+
+.sidebar-dark-primary .nav-sidebar .nav-treeview > .nav-item > .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    border-left: 2px solid var(--zim-gold);
+}
+
+/* Sidebar Brand Logo Hover */
+.brand-link:hover {
+    color: #ffffff !important;
+}
+
+/* Fix Card Outlines */
+.card-primary.card-outline {
+    border-top: 3px solid var(--zim-green);
+}
+.card-warning.card-outline {
+    border-top: 3px solid var(--zim-gold);
+}
+.card-success.card-outline {
+    border-top: 3px solid var(--zim-green-light);
+}
+.card-danger.card-outline {
+    border-top: 3px solid var(--zim-red);
+}
+
+/* Pagination */
+.page-item.active .page-link {
+    background-color: var(--zim-green);
+    border-color: var(--zim-green);
+}
+
+.page-link {
+    color: var(--zim-green);
+}
+
+.page-link:hover {
+    color: var(--zim-green-dark);
+}

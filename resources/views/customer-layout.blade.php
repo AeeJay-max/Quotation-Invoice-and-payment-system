@@ -61,58 +61,58 @@
             <nav class="mt-2 mb-5">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                     
-                    <li class="nav-header font-weight-bold text-info">MY EXHIBITION</li>
+                    <li class="nav-header font-weight-bold text-warning">MY EXHIBITION</li>
 
                     <li class="nav-item">
-                        <a href="{{ route('customer.dashboard') }}" class="nav-link">
+                        <a href="{{ route('customer.dashboard') }}" class="nav-link {{ request()->routeIs('customer.dashboard') ? 'active' : '' }}">
                             <i class="fas fa-tachometer-alt nav-icon"></i>
                             <p>Dashboard</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('customer.quotations.index') }}" class="nav-link">
+                        <a href="{{ route('customer.quotations.index') }}" class="nav-link {{ request()->routeIs('customer.quotations.*') ? 'active' : '' }}">
                             <i class="fas fa-file-alt nav-icon"></i>
                             <p>My Quotations</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('customer.bookings.index') }}" class="nav-link">
+                        <a href="{{ route('customer.bookings.index') }}" class="nav-link {{ request()->routeIs('customer.bookings.*') ? 'active' : '' }}">
                             <i class="fas fa-file-contract nav-icon"></i>
                             <p>My Bookings</p>
                         </a>
                     </li>
 
-                    <li class="nav-header font-weight-bold text-info">FINANCE</li>
+                    <li class="nav-header font-weight-bold text-muted">FINANCE</li>
                     <li class="nav-item">
-                        <a href="{{ route('customer.invoices.index') }}" class="nav-link">
+                        <a href="{{ route('customer.invoices.index') }}" class="nav-link {{ request()->routeIs('customer.invoices.*') ? 'active' : '' }}">
                             <i class="fas fa-file-invoice-dollar nav-icon"></i>
                             <p>My Invoices</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('customer.payments.index') }}" class="nav-link">
+                        <a href="{{ route('customer.payments.index') }}" class="nav-link {{ request()->routeIs('customer.payments.*') ? 'active' : '' }}">
                             <i class="fas fa-credit-card nav-icon"></i>
                             <p>Payments</p>
                         </a>
                     </li>
 
-                    <li class="nav-header font-weight-bold text-info">ATTENDEES</li>
+                    <li class="nav-header font-weight-bold text-muted">ATTENDEES</li>
                     <li class="nav-item">
-                        <a href="{{ route('customer.attendees.index') }}" class="nav-link">
+                        <a href="{{ route('customer.attendees.index') }}" class="nav-link {{ request()->routeIs('customer.attendees.*') ? 'active' : '' }}">
                             <i class="fas fa-users nav-icon"></i>
                             <p>My Attendees</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('customer.badges.index') }}" class="nav-link">
+                        <a href="{{ route('customer.badges.index') }}" class="nav-link {{ request()->routeIs('customer.badges.*') ? 'active' : '' }}">
                             <i class="fas fa-id-badge nav-icon"></i>
                             <p>My Badges</p>
                         </a>
                     </li>
 
-                    <li class="nav-header font-weight-bold text-info">ACCOUNT</li>
+                    <li class="nav-header font-weight-bold text-muted">ACCOUNT</li>
                     <li class="nav-item">
-                        <a href="/profile" class="nav-link">
+                        <a href="/profile" class="nav-link {{ request()->is('profile*') ? 'active' : '' }}">
                             <i class="fas fa-user-cog nav-icon"></i>
                             <p>Profile</p>
                         </a>

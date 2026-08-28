@@ -16,8 +16,9 @@
 <!-- summernote -->
 <link rel="stylesheet" href="{{asset('assets/plugins/summernote/summernote.css')}}">
 
-
 <link rel="stylesheet" href="{{asset('assets/admin/css/style.css')}}">
+<!-- Zimbabwe Government Theme Overrides -->
+<link rel="stylesheet" href="{{asset('assets/admin/css/zimbabwe-theme.css')}}">
 <!-- Google Font: Source Sans Pro -->
 
 <style>

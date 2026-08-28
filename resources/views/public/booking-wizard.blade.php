@@ -5,7 +5,7 @@
 @section('content')
 <style>
     body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    .hero-header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: #fff; padding: 40px 0; border-bottom: 4px solid #f39c12; }
+    .hero-header { background: linear-gradient(135deg, #006B3F 0%, #004D2D 100%); color: #fff; padding: 40px 0; border-bottom: 4px solid #FFD200; }
     .wizard-card { border: none; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); background: #fff; }
     
     .wizard-step { display: none; }
@@ -42,17 +42,17 @@
         border: 4px solid #f4f6f9;
     }
     .step-item.active .step-circle {
-        background: #1e3c72;
+        background: #006B3F;
         color: #fff;
     }
     .step-item.completed .step-circle {
-        background: #28a745;
+        background: #008C45;
         color: #fff;
     }
     .step-label { font-size: 0.85rem; font-weight: 600; color: #6c757d; }
-    .step-item.active .step-label { color: #1e3c72; }
+    .step-item.active .step-label { color: #006B3F; }
     
-    .card-title { color: #1e3c72; font-weight: 700; border-bottom: 2px solid #f39c12; padding-bottom: 10px; margin-bottom: 20px; }
+    .card-title { color: #006B3F; font-weight: 700; border-bottom: 2px solid #FFD200; padding-bottom: 10px; margin-bottom: 20px; }
 </style>
 
 <div class="hero-header text-center">

@@ -24,18 +24,18 @@
                             <h3 class="card-title font-weight-bold"><i class="fas fa-bolt"></i> Quick Actions</h3>
                         </div>
                         <div class="card-body">
-                            <a href="{{ route('admin.events.create') }}" class="btn btn-outline-primary m-1"><i class="fas fa-calendar-plus mr-1"></i> Create Event</a>
-                            <a href="/quotation?status=pending" class="btn btn-outline-warning m-1"><i class="fas fa-file-signature mr-1"></i> Review Quotations</a>
-                            <a href="{{ route('admin.bookings.index') }}" class="btn btn-outline-success m-1"><i class="fas fa-file-contract mr-1"></i> Manage Bookings</a>
-                            <a href="/invoice" class="btn btn-outline-info m-1"><i class="fas fa-money-check-alt mr-1"></i> View Invoices</a>
-                            <a href="{{ route('admin.payments.index') }}" class="btn btn-outline-danger m-1">
+                            <a href="{{ route('admin.events.create') }}" class="btn btn-primary m-1"><i class="fas fa-calendar-plus mr-1"></i> Create Event</a>
+                            <a href="/quotation?status=pending" class="btn btn-outline-secondary m-1"><i class="fas fa-file-signature mr-1"></i> Review Quotations</a>
+                            <a href="{{ route('admin.bookings.index') }}" class="btn btn-outline-primary m-1"><i class="fas fa-file-contract mr-1"></i> Manage Bookings</a>
+                            <a href="/invoice" class="btn btn-outline-secondary m-1"><i class="fas fa-money-check-alt mr-1"></i> View Invoices</a>
+                            <a href="{{ route('admin.payments.index') }}" class="btn btn-outline-primary m-1">
                                 <i class="fas fa-money-check-alt mr-1"></i> Payment Verifications
                                 @if($pendingPaymentsCount > 0)
-                                    <span class="badge badge-danger ml-1">{{ $pendingPaymentsCount }}</span>
+                                    <span class="badge badge-warning ml-1">{{ $pendingPaymentsCount }}</span>
                                 @endif
                             </a>
                             <a href="{{ route('admin.attendees.index') }}" class="btn btn-outline-secondary m-1"><i class="fas fa-users mr-1"></i> Manage Attendees</a>
-                            <a href="{{ route('admin.badges.index') }}" class="btn btn-outline-dark m-1"><i class="fas fa-id-badge mr-1"></i> Manage Badges</a>
+                            <a href="{{ route('admin.badges.index') }}" class="btn btn-outline-secondary m-1"><i class="fas fa-id-badge mr-1"></i> Manage Badges</a>
                         </div>
                     </div>
                 </div>
@@ -45,13 +45,13 @@
             <h5 class="mb-3 font-weight-bold">Operational Statistics</h5>
             <div class="row">
                 <div class="col-lg-3 col-6">
-                    <div class="small-box bg-info">
+                    <div class="small-box bg-primary">
                         <div class="inner"><h3>{{ $totalEvents }}</h3><p>Total Events</p></div>
                         <div class="icon"><i class="fas fa-calendar-alt"></i></div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-6">
-                    <div class="small-box bg-info">
+                    <div class="small-box bg-success">
                         <div class="inner"><h3>{{ $upcomingEventsCount }}</h3><p>Upcoming Events</p></div>
                         <div class="icon"><i class="fas fa-calendar-day"></i></div>
                     </div>
@@ -90,9 +90,9 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-6">
-                    <div class="small-box bg-secondary">
+                    <div class="small-box bg-dark">
                         <div class="inner"><h3>{{ $totalAttendees }}</h3><p>Total Attendees</p></div>
-                        <div class="icon"><i class="fas fa-users"></i></div>
+                        <div class="icon"><i class="fas fa-users text-white-50"></i></div>
                     </div>
                 </div>
             </div>
@@ -102,20 +102,20 @@
             <div class="row">
                 <div class="col-lg-3 col-6">
                     <a href="{{ route('admin.payments.index') }}" style="text-decoration:none;">
-                        <div class="small-box {{ $pendingPaymentsCount > 0 ? 'bg-danger' : 'bg-secondary' }}">
+                        <div class="small-box {{ $pendingPaymentsCount > 0 ? 'bg-warning' : 'bg-secondary' }}">
                             <div class="inner">
-                                <h3>{{ $pendingPaymentsCount }}</h3>
-                                <p>Payments Pending Verification</p>
+                                <h3 class="{{ $pendingPaymentsCount > 0 ? 'text-dark' : 'text-white' }}">{{ $pendingPaymentsCount }}</h3>
+                                <p class="{{ $pendingPaymentsCount > 0 ? 'text-dark' : 'text-white' }}">Payments Pending Verification</p>
                             </div>
-                            <div class="icon"><i class="fas fa-money-check-alt"></i></div>
-                            <span class="small-box-footer">
+                            <div class="icon"><i class="fas fa-money-check-alt {{ $pendingPaymentsCount > 0 ? 'text-dark' : '' }}"></i></div>
+                            <span class="small-box-footer {{ $pendingPaymentsCount > 0 ? 'text-dark' : '' }}">
                                 {{ $pendingPaymentsCount > 0 ? 'Click to review →' : 'All verified ✓' }}
                             </span>
                         </div>
                     </a>
                 </div>
                 <div class="col-lg-3 col-6">
-                    <div class="small-box bg-info">
+                    <div class="small-box bg-primary">
                         <div class="inner"><h3>${{ number_format($totalInvoiced, 2) }}</h3><p>Total Invoiced</p></div>
                         <div class="icon"><i class="fas fa-file-invoice-dollar"></i></div>
                     </div>

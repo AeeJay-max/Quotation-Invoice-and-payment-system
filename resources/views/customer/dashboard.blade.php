@@ -20,16 +20,16 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card shadow-sm">
-                        <div class="card-header bg-info text-white">
+                        <div class="card-header bg-primary text-white">
                             <h3 class="card-title font-weight-bold"><i class="fas fa-bolt"></i> Quick Actions</h3>
                         </div>
                         <div class="card-body">
-                            <a href="{{ route('customer.quotations.index') }}" class="btn btn-outline-info m-1"><i class="fas fa-file-alt mr-1"></i> View My Quotations</a>
-                            <a href="{{ route('customer.quotations.index') }}?status=approved" class="btn btn-outline-warning m-1"><i class="fas fa-exclamation-circle mr-1"></i> View Approved Quotations</a>
-                            <a href="{{ route('customer.bookings.index') }}" class="btn btn-outline-success m-1"><i class="fas fa-file-contract mr-1"></i> View My Bookings</a>
-                            <a href="{{ route('customer.invoices.index') }}" class="btn btn-outline-primary m-1"><i class="fas fa-file-invoice-dollar mr-1"></i> View Invoices</a>
-                            <a href="{{ route('customer.payments.index') }}" class="btn btn-outline-secondary m-1"><i class="fas fa-money-check mr-1"></i> Submit Payment Proof</a>
-                            <a href="{{ route('customer.attendees.index') }}" class="btn btn-outline-dark m-1"><i class="fas fa-users mr-1"></i> Manage Attendees</a>
+                            <a href="{{ route('customer.quotations.index') }}" class="btn btn-outline-primary m-1"><i class="fas fa-file-alt mr-1"></i> View My Quotations</a>
+                            <a href="{{ route('customer.quotations.index') }}?status=approved" class="btn btn-outline-success m-1"><i class="fas fa-exclamation-circle mr-1"></i> View Approved Quotations</a>
+                            <a href="{{ route('customer.bookings.index') }}" class="btn btn-outline-primary m-1"><i class="fas fa-file-contract mr-1"></i> View My Bookings</a>
+                            <a href="{{ route('customer.invoices.index') }}" class="btn btn-outline-secondary m-1"><i class="fas fa-file-invoice-dollar mr-1"></i> View Invoices</a>
+                            <a href="{{ route('customer.payments.index') }}" class="btn btn-primary m-1"><i class="fas fa-money-check mr-1"></i> Submit Payment Proof</a>
+                            <a href="{{ route('customer.attendees.index') }}" class="btn btn-outline-secondary m-1"><i class="fas fa-users mr-1"></i> Manage Attendees</a>
                             <a href="{{ route('customer.badges.index') }}" class="btn btn-outline-secondary m-1"><i class="fas fa-id-badge mr-1"></i> View Badges</a>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-6">
-                    <div class="small-box bg-info">
+                    <div class="small-box bg-success">
                         <div class="inner"><h3>{{ $approvedQuotations }}</h3><p>Approved Quotations</p></div>
                         <div class="icon"><i class="fas fa-check"></i></div>
                     </div>
@@ -58,9 +58,9 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-6">
-                    <div class="small-box bg-secondary">
+                    <div class="small-box bg-dark">
                         <div class="inner"><h3>{{ $attendeeCount }}</h3><p>Attendees</p></div>
-                        <div class="icon"><i class="fas fa-users"></i></div>
+                        <div class="icon"><i class="fas fa-users text-white-50"></i></div>
                     </div>
                 </div>
             </div>
@@ -87,7 +87,7 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-6">
-                    <div class="small-box bg-info">
+                    <div class="small-box bg-primary">
                         <div class="inner"><h3>{{ $paidPercentage }}<sup style="font-size: 20px">%</sup></h3><p>Payment Progress</p></div>
                         <div class="icon"><i class="fas fa-chart-pie"></i></div>
                     </div>

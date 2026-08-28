@@ -15,7 +15,8 @@
     <style>
         .public-navbar { background-color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 10px 0; }
         .public-navbar .nav-link { color: #333; font-weight: 500; padding: 10px 20px; text-transform: uppercase; letter-spacing: 1px; }
-        .public-navbar .nav-link:hover { color: #f39c12; }
+        .public-navbar .nav-link:hover { color: #FFD200; }
+        .public-navbar .nav-item.active .nav-link { color: #006B3F; font-weight: bold; }
         .public-navbar .navbar-brand img { height: 40px; }
         body.public-layout { background-color: #f8f9fa; padding-top: 70px; }
     </style>

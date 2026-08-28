@@ -22,8 +22,8 @@
         <nav class="mt-2 mb-5">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-                <li class="nav-item @yield('dashboard-open')">
-                    <a href="/dashboard" class="nav-link @yield('dashboard')">
+                <li class="nav-item">
+                    <a href="/dashboard" class="nav-link {{ request()->is('dashboard') || request()->is('admin') ? 'active' : '' }}">
                         <i class="fas fa-tachometer-alt nav-icon"></i>
                         <p>Dashboard</p>
                     </a>
@@ -33,35 +33,35 @@
                 <li class="nav-header font-weight-bold text-warning">EVENT & EXHIBITIONS</li>
 
                 <li class="nav-item">
-                    <a href="{{ route('admin.events.index') }}" class="nav-link">
+                    <a href="{{ route('admin.events.index') }}" class="nav-link {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
                         <i class="fas fa-calendar-alt nav-icon"></i>
                         <p>Events Management</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('admin.bookings.index') }}" class="nav-link">
+                    <a href="{{ route('admin.bookings.index') }}" class="nav-link {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}">
                         <i class="fas fa-file-contract nav-icon"></i>
                         <p>Confirmed Bookings</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('admin.attendees.index') }}" class="nav-link">
+                    <a href="{{ route('admin.attendees.index') }}" class="nav-link {{ request()->routeIs('admin.attendees.*') ? 'active' : '' }}">
                         <i class="fas fa-users-cog nav-icon"></i>
                         <p>Attendee Processing</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('admin.badges.index') }}" class="nav-link">
+                    <a href="{{ route('admin.badges.index') }}" class="nav-link {{ request()->routeIs('admin.badges.*') ? 'active' : '' }}">
                         <i class="fas fa-id-card nav-icon"></i>
                         <p>Badge Management</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('admin.payments.index') }}" class="nav-link">
+                    <a href="{{ route('admin.payments.index') }}" class="nav-link {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
                         <i class="fas fa-money-check-alt nav-icon text-warning"></i>
                         <p>
                             Payment Verifications
@@ -79,8 +79,8 @@
 
                 {{--CLIENTS--}}
                 @can('list', 'client')
-                <li class="nav-item has-treeview @yield('clients-show')">
-                    <a href="#" class="nav-link">
+                <li class="nav-item has-treeview {{ request()->is('client*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('client*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users-cog"></i>
                         <p>
                             Clients
@@ -90,7 +90,7 @@
                     <ul class="nav nav-treeview">
                         @can('list', 'client')
                             <li class="nav-item">
-                                <a href="/client/" class="nav-link @yield('list-clients')">
+                                <a href="/client/" class="nav-link {{ request()->is('client') || request()->is('client/search*') || request()->is('client/edit*') ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>All Clients</p>
                                 </a>
@@ -98,7 +98,7 @@
                         @endcan
                         @can('create', 'client')
                             <li class="nav-item">
-                                <a href="/client/create" class="nav-link @yield('create-clients')">
+                                <a href="/client/create" class="nav-link {{ request()->is('client/create') ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Add New</p>
                                 </a>
@@ -111,9 +111,9 @@
 
                 {{--invoices--}}
                 @can('list', 'invoice')
-                <li class="nav-item has-treeview @yield('invoice-show')">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fas fa-file-invoice-dollar"></i>
+                <li class="nav-item has-treeview {{ request()->is('invoice*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('invoice*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-file-invoice-dollar"></i>
                         <p>
                             Invoices
                             <i class="right fas fa-angle-left"></i>
@@ -122,7 +122,7 @@
                     <ul class="nav nav-treeview">
                         @can('list', 'invoice')
                             <li class="nav-item">
-                                <a href="/invoice" class="nav-link @yield('list-invoice')">
+                                <a href="/invoice" class="nav-link {{ request()->is('invoice') || request()->is('invoice/view*') || request()->is('invoice/edit*') ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>All Invoices</p>
                                 </a>
@@ -130,7 +130,7 @@
                         @endcan
                             @can('create', 'invoice')
                         <li class="nav-item">
-                            <a href="/invoice/create" class="nav-link @yield('create-invoice')">
+                            <a href="/invoice/create" class="nav-link {{ request()->is('invoice/create') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Add New</p>
                             </a>
@@ -142,8 +142,8 @@
 
                 {{--Quotations--}}
                 @can('list', 'quotation')
-                <li class="nav-item has-treeview @yield('quotation-show')">
-                    <a href="#" class="nav-link">
+                <li class="nav-item has-treeview {{ request()->is('quotation*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('quotation*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-receipt"></i>
                         <p>
                             Quotations
@@ -153,7 +153,7 @@
                     <ul class="nav nav-treeview">
                      @can('list', 'quotation')
                             <li class="nav-item">
-                                <a href="/quotation" class="nav-link @yield('list-quotation')">
+                                <a href="/quotation" class="nav-link {{ request()->is('quotation') || request()->is('quotation/view*') || request()->is('quotation/edit*') ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>All Quotations</p>
                                 </a>
@@ -161,7 +161,7 @@
                         @endcan
                        @can('create', 'quotation')
                              <li class="nav-item">
-                                 <a href="/quotation/create" class="nav-link @yield('create-quotation')">
+                                 <a href="/quotation/create" class="nav-link {{ request()->is('quotation/create') ? 'active' : '' }}">
                                      <i class="far fa-circle nav-icon"></i>
                                      <p>Add New</p>
                                  </a>
@@ -174,8 +174,8 @@
 
                 {{--Expenses--}}
                 @can('list', 'expense')
-                <li class="nav-item has-treeview @yield('expense-show')">
-                    <a href="#" class="nav-link">
+                <li class="nav-item has-treeview {{ request()->is('expense*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('expense*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-hand-holding-usd"></i>
                         <p>
                             Expenses
@@ -185,7 +185,7 @@
                     <ul class="nav nav-treeview">
                        @can('list', 'expense')
                             <li class="nav-item">
-                                <a href="/expense" class="nav-link @yield('list-expense')">
+                                <a href="/expense" class="nav-link {{ request()->is('expense') || request()->is('expense/view*') || request()->is('expense/edit*') ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>All Expenses</p>
                                 </a>
@@ -193,7 +193,7 @@
                         @endcan
                            @can('create', 'expense')
                         <li class="nav-item">
-                            <a href="/expense/create" class="nav-link @yield('create-expense')">
+                            <a href="/expense/create" class="nav-link {{ request()->is('expense/create') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Add New</p>
                             </a>
@@ -206,8 +206,8 @@
 
                 {{--Email templates--}}
                 @can('list', 'email_template')
-                <li class="nav-item has-treeview @yield('etemplate-show')">
-                    <a href="#" class="nav-link">
+                <li class="nav-item has-treeview {{ request()->is('etemplate*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('etemplate*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-envelope"></i>
                         <p>
                             Email Template
@@ -217,7 +217,7 @@
                     <ul class="nav nav-treeview">
                         @can('list', 'email_template')
                         <li class="nav-item">
-                            <a href="/etemplate" class="nav-link @yield('list-etemplate')">
+                            <a href="/etemplate" class="nav-link {{ request()->is('etemplate') || request()->is('etemplate/edit*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Templates</p>
                             </a>
@@ -225,7 +225,7 @@
                         @endcan
                             @can('create', 'email_template')
                         <li class="nav-item">
-                            <a href="/etemplate/create" class="nav-link @yield('create-etemplate')">
+                            <a href="/etemplate/create" class="nav-link {{ request()->is('etemplate/create') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Add New</p>
                             </a>
@@ -238,8 +238,8 @@
 
                 {{--Users--}}
                 @can('list', 'user')
-                <li class="nav-item has-treeview @yield('users-show')">
-                    <a href="#" class="nav-link">
+                <li class="nav-item has-treeview {{ request()->is('user*') || request()->is('role*') || request()->is('permission*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('user*') || request()->is('role*') || request()->is('permission*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
                         <p>
                             Users
@@ -249,7 +249,7 @@
                     <ul class="nav nav-treeview">
                         @can('list', 'user')
                         <li class="nav-item">
-                            <a href="/user/" class="nav-link @yield('list-user')">
+                            <a href="/user/" class="nav-link {{ request()->is('user') || request()->is('user/edit*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Users</p>
                             </a>
@@ -257,7 +257,7 @@
                         @endcan
                             @can('create', 'user')
                         <li class="nav-item">
-                            <a href="/user/create" class="nav-link @yield('create-user')">
+                            <a href="/user/create" class="nav-link {{ request()->is('user/create') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Add New</p>
                             </a>
@@ -265,7 +265,7 @@
                             @endcan
                             @can('list', 'role')
                         <li class="nav-item">
-                            <a href="{{route('role.index')}}" class="nav-link @yield('roles')">
+                            <a href="{{route('role.index')}}" class="nav-link {{ request()->routeIs('role.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Roles</p>
                             </a>
@@ -273,7 +273,7 @@
                             @endcan
                             @can('list', 'permission')
                         <li class="nav-item">
-                            <a href="{{route('permission.index')}}" class="nav-link @yield('permissions')">
+                            <a href="{{route('permission.index')}}" class="nav-link {{ request()->routeIs('permission.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Permissions</p>
                             </a>
@@ -286,8 +286,8 @@
 
                 {{--Settings--}}
                 @can('update', 'setting')
-                <li class="nav-item has-treeview @yield('settings-show')">
-                    <a href="#" class="nav-link">
+                <li class="nav-item has-treeview {{ request()->is('settings*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('settings*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-cogs"></i>
                         <p>
                             Settings
@@ -296,25 +296,25 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="/settings/system" class="nav-link @yield('general-settings')">
+                            <a href="/settings/system" class="nav-link {{ request()->is('settings/system') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>System Settings</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/settings/smtp" class="nav-link @yield('smtp-settings')">
+                            <a href="/settings/smtp" class="nav-link {{ request()->is('settings/smtp') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>SMTP Settings</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/settings/imap" class="nav-link @yield('imap-settings')">
+                            <a href="/settings/imap" class="nav-link {{ request()->is('settings/imap') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>IMAP Settings</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/settings/email" class="nav-link @yield('email-settings')">
+                            <a href="/settings/email" class="nav-link {{ request()->is('settings/email') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Banking Details</p>
                             </a>
@@ -325,7 +325,7 @@
                 @endcan
 
                 <li class="nav-item">
-                    <a href="/profile" class="nav-link @yield('update-profile')">
+                    <a href="/profile" class="nav-link {{ request()->is('profile*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user"></i>
                         <p>
                             Profile
