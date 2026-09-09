@@ -57,7 +57,10 @@
 
 <div class="hero-header text-center">
     <div class="container">
-        <h1 class="display-4 font-weight-bold"><i class="fas fa-cubes text-warning"></i> Exhibition Quotation Request</h1>
+        <h1 class="display-4 font-weight-bold">
+            <img src="{{asset($global_settings['logo'] ?? '')}}" alt="Ministry Logo" style="height: 70px; margin-right: 15px; vertical-align: middle;">
+            Exhibition Quotation Request
+        </h1>
         <p class="lead mb-0">Step-by-step exhibition stand and space configuration.</p>
     </div>
 </div>
@@ -185,17 +188,60 @@
 
             <!-- STEP 3 -->
             <div class="wizard-step" id="step-3">
-                <h4 class="card-title">3. Number of People Attending</h4>
-                <div class="form-group text-center my-5">
-                    <label class="font-weight-bold d-block" style="font-size: 1.5rem;">How many people will be attending this exhibition?</label>
-                    <div class="d-inline-flex align-items-center mt-3">
-                        <button type="button" class="btn btn-outline-secondary btn-lg" onclick="updatePeople(-1)"><i class="fas fa-minus"></i></button>
-                        <input type="number" name="people_count" id="people_count" class="form-control text-center mx-2" style="width: 100px; font-size: 1.5rem; height: 50px;" required min="1">
-                        <button type="button" class="btn btn-outline-secondary btn-lg" onclick="updatePeople(1)"><i class="fas fa-plus"></i></button>
+                <h4 class="card-title">3. Attendees & Ticket Pass Selection</h4>
+                <p class="text-muted">Select the number of people attending and specify pass categories for your delegation.</p>
+
+                <div class="card bg-light p-4 mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="card border-warning text-center h-100">
+                                <div class="card-header bg-warning font-weight-bold text-dark">
+                                    <i class="fas fa-crown mr-1"></i> VIP Passes
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="text-dark font-weight-bold mb-1" id="vip_price_label">$100.00 / pass</h5>
+                                    <small class="text-muted d-block mb-3" id="vip_available_label">VIP Tickets Available</small>
+                                    <input type="number" min="0" name="vip_tickets_count" id="vip_tickets_count" class="form-control form-control-lg text-center font-weight-bold" value="0" onchange="calculateTicketTotal()">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="card border-secondary text-center h-100">
+                                <div class="card-header bg-secondary font-weight-bold text-white">
+                                    <i class="fas fa-user-friends mr-1"></i> General Admission
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="text-dark font-weight-bold mb-1" id="general_price_label">$25.00 / pass</h5>
+                                    <small class="text-muted d-block mb-3" id="general_available_label">General Tickets Available</small>
+                                    <input type="number" min="0" name="general_tickets_count" id="general_tickets_count" class="form-control form-control-lg text-center font-weight-bold" value="1" onchange="calculateTicketTotal()">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="card border-info text-center h-100">
+                                <div class="card-header bg-info font-weight-bold text-white">
+                                    <i class="fas fa-id-badge mr-1"></i> Delegate Passes
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="text-dark font-weight-bold mb-1" id="delegate_price_label">$50.00 / pass</h5>
+                                    <small class="text-muted d-block mb-3" id="delegate_available_label">Delegate Tickets Available</small>
+                                    <input type="number" min="0" name="delegate_tickets_count" id="delegate_tickets_count" class="form-control form-control-lg text-center font-weight-bold" value="0" onchange="calculateTicketTotal()">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <small class="form-text text-muted mt-2">Please select a value greater than 0.</small>
+
+                    <div class="row mt-4 pt-3 border-top text-center">
+                        <div class="col-md-6">
+                            <h5 class="font-weight-bold text-dark mb-0">Total Attendees: <span id="total_people_display" class="text-primary font-weight-bold">1</span> People</h5>
+                            <input type="hidden" name="people_count" id="people_count" value="1">
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="font-weight-bold text-dark mb-0">Ticket Total Price: <span id="ticket_total_price_display" class="text-success font-weight-bold">$25.00</span></h5>
+                        </div>
+                    </div>
                 </div>
-                
+
                 <div class="d-flex justify-content-between mt-4">
                     <button type="button" class="btn btn-secondary btn-lg px-4 btn-prev"><i class="fas fa-arrow-left"></i> Back</button>
                     <button type="button" class="btn btn-primary btn-lg px-5 btn-next">Next <i class="fas fa-arrow-right"></i></button>
@@ -218,18 +264,25 @@
                             <option value="" selected disabled>-- Select Stand Type --</option>
                         </select>
                     </div>
-                    <div class="col-md-4 form-group">
-                        <label>Width (Metres) *</label>
-                        <input type="number" step="0.5" min="1" name="width" id="width" class="form-control" required>
+                    <div class="col-md-6 form-group">
+                        <label class="font-weight-bold text-success" style="font-size: 1.1rem;"><i class="fas fa-ruler-combined mr-1"></i> Requested Area (Square Meters $m^2$) *</label>
+                        <div class="input-group">
+                            <input type="number" step="0.5" min="1" id="custom_area" name="custom_area" class="form-control form-control-lg font-weight-bold text-success border-success" placeholder="e.g. 36" required>
+                            <div class="input-group-append">
+                                <span class="input-group-text bg-success text-white font-weight-bold">m²</span>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted font-weight-bold">Apply the total square meters ($m^2$) your company requires.</small>
                     </div>
-                    <div class="col-md-4 form-group">
-                        <label>Length (Metres) *</label>
-                        <input type="number" step="0.5" min="1" name="length" id="length" class="form-control" required>
+                    <div class="col-md-3 form-group">
+                        <label>Width (Metres) <small class="text-muted">(Optional)</small></label>
+                        <input type="number" step="0.5" min="0.5" name="width" id="width" class="form-control" placeholder="e.g. 6">
                     </div>
-                    <div class="col-md-4 form-group">
-                        <label>Calculated Area</label>
-                        <input type="text" id="calculated_area" class="form-control font-weight-bold bg-light" readonly>
+                    <div class="col-md-3 form-group">
+                        <label>Length (Metres) <small class="text-muted">(Optional)</small></label>
+                        <input type="number" step="0.5" min="0.5" name="length" id="length" class="form-control" placeholder="e.g. 6">
                     </div>
+                    <input type="hidden" id="calculated_area" name="calculated_area">
                     <div class="col-md-12 form-group">
                         <label>Preferred Position / Stand Location</label>
                         <select name="space_position_id" id="space_position_id" class="form-control">
@@ -409,13 +462,21 @@
         } else if (step === 3) {
             let pCount = parseInt($('#people_count').val());
             if (isNaN(pCount) || pCount < 1) {
-                alert('Please select a valid number of people (minimum 1).');
+                alert('Please select at least 1 attendee ticket pass.');
                 isValid = false;
             }
         } else if (step === 4) {
-            if (!$('#event_space_id').val() || !$('#stand_type_id').val() || !$('#width').val() || !$('#length').val()) {
-                alert('Please complete all space and stand configurations.');
+            let reqArea = parseFloat($('#custom_area').val()) || (parseFloat($('#width').val()) * parseFloat($('#length').val()));
+            if (!$('#event_space_id').val() || !$('#stand_type_id').val() || isNaN(reqArea) || reqArea <= 0) {
+                alert('Please select an exhibition space, stand type, and specify your desired square meters (m²).');
                 isValid = false;
+            } else {
+                let selectedOpt = $('#event_space_id option:selected');
+                let remSqm = parseFloat(selectedOpt.data('rem-sqm'));
+                if (!isNaN(remSqm) && reqArea > remSqm) {
+                    alert(`Requested space (${reqArea} m²) exceeds the remaining available space (${remSqm} m²) in this hall/room.`);
+                    isValid = false;
+                }
             }
         }
         
@@ -434,13 +495,31 @@
         showStep(currentStep);
     });
 
-    function updatePeople(change) {
-        let input = $('#people_count');
-        let val = parseInt(input.val() || 0);
-        let newVal = val + change;
-        if (newVal > 0) {
-            input.val(newVal);
+    function calculateTicketTotal() {
+        let vip = parseInt($('#vip_tickets_count').val()) || 0;
+        let gen = parseInt($('#general_tickets_count').val()) || 0;
+        let del = parseInt($('#delegate_tickets_count').val()) || 0;
+
+        let totalPeople = vip + gen + del;
+        if (totalPeople < 1) {
+            totalPeople = 1;
+            $('#general_tickets_count').val(1);
+            gen = 1;
         }
+
+        $('#people_count').val(totalPeople);
+        $('#total_people_display').text(totalPeople);
+
+        let spaceId = $('#event_space_id').val();
+        let ev = eventsData.find(e => e.id == $('#event_id').val());
+        let space = ev && ev.spaces ? ev.spaces.find(s => s.id == spaceId) : null;
+
+        let vipPrice = space ? parseFloat(space.vip_ticket_price || 100.00) : 100.00;
+        let genPrice = space ? parseFloat(space.general_ticket_price || 25.00) : 25.00;
+        let delPrice = space ? parseFloat(space.delegate_ticket_price || 50.00) : 50.00;
+
+        let totalPrice = (vip * vipPrice) + (gen * genPrice) + (del * delPrice);
+        $('#ticket_total_price_display').text('$' + totalPrice.toFixed(2));
     }
     
     // Dynamic loading based on Event ID
@@ -449,10 +528,12 @@
         let ev = eventsData.find(e => e.id == eventId);
         if(!ev) return;
         
-        // Populate Spaces
-        let spacesHtml = '<option value="" selected disabled>-- Select Space --</option>';
+        // Populate Spaces with remaining available m²
+        let spacesHtml = '<option value="" selected disabled>-- Select Space / Hall --</option>';
         ev.spaces.forEach(s => {
-            spacesHtml += `<option value="${s.id}">${s.name} ($${s.price_per_sqm}/m²)</option>`;
+            let remSqm = (s.available_area_sqm !== undefined && s.available_area_sqm !== null) ? s.available_area_sqm : (s.total_area_sqm || 500);
+            let badgeText = remSqm <= 0 ? ' [FULL]' : ` [${remSqm} m² available]`;
+            spacesHtml += `<option value="${s.id}" data-rem-sqm="${remSqm}" ${remSqm <= 0 ? 'disabled' : ''}>${s.name} - ${remSqm} m² available ($${s.price_per_sqm}/m²)</option>`;
         });
         $('#event_space_id').html(spacesHtml);
         
@@ -497,7 +578,27 @@
     $('#event_space_id').change(function() {
         let spaceId = $(this).val();
         let ev = eventsData.find(e => e.id == $('#event_id').val());
-        let space = ev.spaces.find(s => s.id == spaceId);
+        let space = ev ? ev.spaces.find(s => s.id == spaceId) : null;
+
+        if (space) {
+            let vipPrice = space.vip_ticket_price || 100.00;
+            let genPrice = space.general_ticket_price || 25.00;
+            let delPrice = space.delegate_ticket_price || 50.00;
+
+            let vipAvail = space.vip_tickets_available !== undefined ? space.vip_tickets_available : (space.vip_tickets_quota || 50);
+            let genAvail = space.general_tickets_available !== undefined ? space.general_tickets_available : (space.general_tickets_quota || 200);
+            let delAvail = space.delegate_tickets_available !== undefined ? space.delegate_tickets_available : (space.delegate_tickets_quota || 100);
+
+            $('#vip_price_label').text('$' + parseFloat(vipPrice).toFixed(2) + ' / pass');
+            $('#general_price_label').text('$' + parseFloat(genPrice).toFixed(2) + ' / pass');
+            $('#delegate_price_label').text('$' + parseFloat(delPrice).toFixed(2) + ' / pass');
+
+            $('#vip_available_label').text(vipAvail + ' tickets left');
+            $('#general_available_label').text(genAvail + ' tickets left');
+            $('#delegate_available_label').text(delAvail + ' tickets left');
+
+            calculateTicketTotal();
+        }
         
         let posHtml = '<option value="" selected>No preference / Standard</option>';
         if(space && space.positions) {
@@ -508,11 +609,26 @@
         $('#space_position_id').html(posHtml);
     });
     
-    // Auto calculate area
+    // Auto calculate area from Width x Length
     $('#width, #length').on('input', function() {
         let w = parseFloat($('#width').val()) || 0;
         let l = parseFloat($('#length').val()) || 0;
-        $('#calculated_area').val((w * l) + ' m²');
+        let area = w * l;
+        if (area > 0) {
+            $('#custom_area').val(area);
+            $('#calculated_area').val(area);
+        }
+    });
+
+    // Auto calculate Width x Length from Custom Square Meters input
+    $('#custom_area').on('input', function() {
+        let area = parseFloat($(this).val()) || 0;
+        if (area > 0) {
+            let side = Math.round(Math.sqrt(area) * 10) / 10;
+            if (!$('#width').is(':focus')) $('#width').val(side);
+            if (!$('#length').is(':focus')) $('#length').val(side);
+            $('#calculated_area').val(area);
+        }
     });
 
     // Accept terms toggle
@@ -527,14 +643,26 @@
         $('#rev_company').text($('input[name="company_name"]').val());
         $('#rev_contact').text($('input[name="contact_person"]').val() + ' (' + $('input[name="email"]').val() + ')');
         
-        $('#rev_people').text($('#people_count').val() + ' people');
+        let vip = parseInt($('#vip_tickets_count').val()) || 0;
+        let gen = parseInt($('#general_tickets_count').val()) || 0;
+        let del = parseInt($('#delegate_tickets_count').val()) || 0;
+        let ticketsText = $('#people_count').val() + ' people (';
+        let parts = [];
+        if (vip > 0) parts.push(vip + ' VIP');
+        if (gen > 0) parts.push(gen + ' General');
+        if (del > 0) parts.push(del + ' Delegate');
+        ticketsText += parts.join(', ') + ')';
+        $('#rev_people').text(ticketsText);
         
         let spaceText = $('#event_space_id option:selected').text();
         let standText = $('#stand_type_id option:selected').text();
         $('#rev_space').html(spaceText + '<br>' + standText);
-        $('#rev_dimensions').text($('#width').val() + 'm x ' + $('#length').val() + 'm (' + $('#calculated_area').val() + ')');
+        $('#rev_dimensions').text($('#width').val() + 'm x ' + $('#length').val() + 'm (' + $('#calculated_area').val() + ' m²)');
         
         let extras = '';
+        if (vip > 0 || gen > 0 || del > 0) {
+            extras += `<li><strong>Ticket Passes:</strong> ${ticketsText}</li>`;
+        }
         $('#furniture_list input').each(function() {
             let q = parseInt($(this).val());
             if(q > 0) {

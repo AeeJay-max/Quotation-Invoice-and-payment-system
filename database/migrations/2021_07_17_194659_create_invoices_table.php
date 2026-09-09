@@ -18,7 +18,7 @@ class CreateInvoicesTable extends Migration
             $table->unsignedBigInteger('client_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('payment_type');
-            $table->unsignedBigInteger('payment_status');
+            $table->unsignedBigInteger('payment_status')->nullable();
             $table->unsignedBigInteger('payment_currency');
             $table->integer('discount')->nullable();
             $table->integer('vat')->nullable();

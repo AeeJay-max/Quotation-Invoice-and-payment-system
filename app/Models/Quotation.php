@@ -27,6 +27,11 @@ class Quotation extends Model
         'space_cost',
         'furniture_total',
         'services_total',
+        'people_count',
+        'vip_tickets_count',
+        'general_tickets_count',
+        'delegate_tickets_count',
+        'tickets_cost',
         'subtotal',
         'total'
     ];

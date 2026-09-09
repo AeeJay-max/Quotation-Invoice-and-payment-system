@@ -45,8 +45,8 @@
 
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        <a href="{{ route('customer.dashboard') }}" class="m-auto brand-link">
-            <img src="{{asset($global_settings['logo'] ?? '')}}" alt="Logo" class="elevation-3" style="opacity: .8;width: 108px">
+        <a href="{{ route('customer.dashboard') }}" class="brand-link text-center d-block">
+            <img src="{{asset($global_settings['logo'] ?? '')}}" alt="Logo" class="mx-auto d-block" style="width: 140px; border: none; box-shadow: none;">
         </a>
 
         <div class="sidebar">

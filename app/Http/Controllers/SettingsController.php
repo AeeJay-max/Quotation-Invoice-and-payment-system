@@ -336,6 +336,14 @@ class SettingsController extends Controller
 
                 Settings::updateOrCreate(
                     [
+                        'type' => 'system', 'label' => 'app_email_cc',
+                    ], [
+                        'type' => 'system', 'label' => 'app_email_cc', 'description' => $request->app_email_cc,
+                    ]
+                );
+
+                Settings::updateOrCreate(
+                    [
                         'type' => 'system', 'label' => 'app_url',
                     ], [
                         'type' => 'system', 'label' => 'app_url', 'description' => $request->app_url,

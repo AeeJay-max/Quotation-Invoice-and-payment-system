@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'isactive' => IsActive::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'customer' => \App\Http\Middleware\CustomerMiddleware::class,
+        'event.context' => \App\Http\Middleware\SetSelectedEventMiddleware::class,
     ];
 }

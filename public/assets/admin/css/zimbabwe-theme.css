@@ -157,10 +157,21 @@
     background-color: rgba(0, 107, 63, 0.05); /* very subtle light green */
 }
 
+/* Sidebar Background completely Green */
+.sidebar-dark-primary, 
+.sidebar-dark-primary .sidebar {
+    background-color: var(--zim-green) !important;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link,
+.sidebar-dark-primary .user-panel a:hover {
+    color: #ffffff !important;
+}
+
 /* Sidebar Active Navigation State */
 .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active,
 .sidebar-light-primary .nav-sidebar > .nav-item > .nav-link.active {
-    background-color: var(--zim-green) !important;
+    background-color: var(--zim-green-light) !important;
     color: #ffffff !important;
     border-left: 4px solid var(--zim-gold);
     font-weight: 600;
@@ -190,7 +201,14 @@
     border-left: 2px solid var(--zim-gold);
 }
 
-/* Sidebar Brand Logo Hover */
+/* Sidebar Brand Logo Integration (No Box/Overlay) */
+.brand-link {
+    border-bottom: none !important; /* Remove bottom line */
+    background-color: transparent !important; /* Ensure no overlay */
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+}
+
 .brand-link:hover {
     color: #ffffff !important;
 }

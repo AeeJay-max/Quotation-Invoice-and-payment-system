@@ -29,14 +29,15 @@ class CustomerPortalController extends Controller
 
     protected function getMinistrySettings()
     {
-        $db = \App\Models\Settings::where('type', 'general')->pluck('description', 'label')->toArray();
+        $db = \App\Models\Settings::whereIn('type', ['system', 'general'])->pluck('description', 'label')->toArray();
         // Hardcoded fallbacks so the views never show blanks
         return array_merge([
-            'app_name'           => 'Ministry of Sports, Recreation, Arts and Culture',
+            'app_name'           => 'Ministry of Sport, Recreation, Arts and Culture',
             'app_address'        => 'Chinengundu Mashayamombe Building 95, Cnr N. Mandela & S. V. Muzenda Street, Harare',
             'app_postal_address' => 'P.O. Box HR 480 Harare',
-            'app_email'          => 'minofsportandarts@gmail.com',
-            'app_phone'          => '+263242708345',
+            'app_email'          => 'mosrac@kuzana.org.zw',
+            'app_email_cc'       => 'secretariat@kuzana.org.zw',
+            'app_phone'          => '+263 772 394036 / +263 717 720 641 / +263 719 226 279 / +263 716 801 385',
             'logo'               => 'assets/files/ministry-logo.png',
         ], $db);
     }

@@ -65,12 +65,16 @@ class EventBookingWizardController extends Controller
             'business_category' => 'required|string|max:100',
             'event_space_id' => 'required|exists:event_spaces,id',
             'stand_type_id' => 'required|exists:stand_types,id',
-            'width' => 'required|numeric|min:1',
-            'length' => 'required|numeric|min:1',
+            'width' => 'nullable|numeric|min:0.1',
+            'length' => 'nullable|numeric|min:0.1',
+            'custom_area' => 'nullable|numeric|min:0.1',
             'space_position_id' => 'nullable|exists:space_positions,id',
             'furniture' => 'nullable|array',
             'services' => 'nullable|array',
             'people_count' => 'required|integer|min:1',
+            'vip_tickets_count' => 'nullable|integer|min:0',
+            'general_tickets_count' => 'nullable|integer|min:0',
+            'delegate_tickets_count' => 'nullable|integer|min:0',
             'terms_accepted' => 'required',
             'password' => Auth::check() ? 'nullable' : 'required|string|min:6|confirmed',
         ]);
@@ -135,11 +139,15 @@ class EventBookingWizardController extends Controller
                 'user_id' => $user->id,
                 'create_date' => now(),
                 'due_date' => now()->addDays(14),
-                'note' => "Event Exhibition Booking for {$event->name}. Space: Width {$calc['width']}m x Length {$calc['length']}m ({$calc['area_sqm']} sq.m)",
+                'note' => "Event Exhibition Booking for {$event->name}. Space: {$calc['area_sqm']} sq.m",
                 'terms_condition' => $event->terms_and_conditions ?? 'Standard event booking terms apply.',
                 'discount' => $calc['discount'],
                 'vat' => $calc['vat_amount'],
                 'space_cost' => $calc['space_cost'],
+                'tickets_cost' => $calc['tickets_cost'],
+                'vip_tickets_count' => $calc['vip_count'],
+                'general_tickets_count' => $calc['general_count'],
+                'delegate_tickets_count' => $calc['delegate_count'],
                 'furniture_total' => $calc['furniture_total'],
                 'services_total' => $calc['services_total'],
                 'subtotal' => $calc['subtotal'],
@@ -150,13 +158,23 @@ class EventBookingWizardController extends Controller
                 'people_count' => $validated['people_count'],
             ]);
 
-            // Save Quotation Items
+            // Save Quotation Items for Space & Stand
             QuotationItem::create([
                 'quotation_id' => $quotation->id,
                 'description' => "Exhibition Space & Stand: {$calc['width']}m x {$calc['length']}m ({$calc['area_sqm']}m²)",
                 'quantity' => 1,
                 'unit_price' => $calc['space_cost'],
             ]);
+
+            // Save Quotation Items for Selected Ticket Passes
+            foreach ($calc['ticket_items'] as $tItem) {
+                QuotationItem::create([
+                    'quotation_id' => $quotation->id,
+                    'description' => "Ticket Pass: {$tItem['name']}",
+                    'quantity' => $tItem['quantity'],
+                    'unit_price' => $tItem['unit_price'],
+                ]);
+            }
 
             foreach ($calc['furniture_items'] as $fItem) {
                 QuotationItem::create([
@@ -174,6 +192,32 @@ class EventBookingWizardController extends Controller
                     'quantity' => $sItem['quantity'],
                     'unit_price' => $sItem['unit_price'],
                 ]);
+            }
+
+            // Automatic Inventory Deduction of Remaining Space (m²) and Remaining Tickets
+            $eventSpace = \App\Models\EventSpace::find($validated['event_space_id']);
+            if ($eventSpace) {
+                $remSqm = floatval($eventSpace->available_area_sqm ?? $eventSpace->total_area_sqm ?? 500);
+                $eventSpace->available_area_sqm = max(0, $remSqm - $calc['area_sqm']);
+                if ($eventSpace->available_area_sqm <= 0) {
+                    $eventSpace->availability_status = 'full';
+                }
+
+                $eventSpace->vip_tickets_available = max(0, intval($eventSpace->vip_tickets_available ?? 50) - $calc['vip_count']);
+                $eventSpace->general_tickets_available = max(0, intval($eventSpace->general_tickets_available ?? 200) - $calc['general_count']);
+                $eventSpace->delegate_tickets_available = max(0, intval($eventSpace->delegate_tickets_available ?? 100) - $calc['delegate_count']);
+                $eventSpace->save();
+
+                // Also update venue hall remaining space & tickets if linked
+                $venueHall = \App\Models\VenueHall::where('name', $eventSpace->name)->first();
+                if ($venueHall) {
+                    $vRemSqm = floatval($venueHall->available_area_sqm ?? $venueHall->total_area_sqm ?? 500);
+                    $venueHall->available_area_sqm = max(0, $vRemSqm - $calc['area_sqm']);
+                    $venueHall->vip_tickets_available = max(0, intval($venueHall->vip_tickets_available ?? 50) - $calc['vip_count']);
+                    $venueHall->general_tickets_available = max(0, intval($venueHall->general_tickets_available ?? 200) - $calc['general_count']);
+                    $venueHall->delegate_tickets_available = max(0, intval($venueHall->delegate_tickets_available ?? 100) - $calc['delegate_count']);
+                    $venueHall->save();
+                }
             }
 
             DB::commit();
@@ -202,13 +246,14 @@ class EventBookingWizardController extends Controller
         $bankDetails = \App\Models\Settings::where('type', 'email')->pluck('description', 'label')->toArray();
 
         // Ministry branding with hardcoded fallbacks
-        $dbSettings     = \App\Models\Settings::where('type', 'general')->pluck('description', 'label')->toArray();
+        $dbSettings     = \App\Models\Settings::whereIn('type', ['system', 'general'])->pluck('description', 'label')->toArray();
         $global_settings = array_merge([
-            'app_name'           => 'Ministry of Sports, Recreation, Arts and Culture',
+            'app_name'           => 'Ministry of Sport, Recreation, Arts and Culture',
             'app_address'        => 'Chinengundu Mashayamombe Building 95, Cnr N. Mandela & S. V. Muzenda Street, Harare',
             'app_postal_address' => 'P.O. Box HR 480 Harare',
-            'app_email'          => 'minofsportandarts@gmail.com',
-            'app_phone'          => '+263242708345',
+            'app_email'          => 'mosrac@kuzana.org.zw',
+            'app_email_cc'       => 'secretariat@kuzana.org.zw',
+            'app_phone'          => '+263 772 394036 / +263 717 720 641 / +263 719 226 279 / +263 716 801 385',
             'logo'               => 'assets/files/ministry-logo.png',
         ], $dbSettings);
 

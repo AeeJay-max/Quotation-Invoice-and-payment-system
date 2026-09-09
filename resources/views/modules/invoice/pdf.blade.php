@@ -214,14 +214,16 @@
                 </td>
                 <td width="82%" style="vertical-align:middle;">
                     <div style="font-size:15px; font-weight:700; color:#1a5c1a; text-transform:uppercase; letter-spacing:0.5px; line-height:1.3;">
-                        {{ $settings['app_name'] ?? 'Ministry of Sports, Recreation, Arts and Culture' }}
+                        {{ $settings['app_name'] ?? 'Ministry of Sport, Recreation, Arts and Culture' }}
                     </div>
                     <div style="font-size:11px; color:#444; margin-top:4px; line-height:1.7;">
                         {{ $settings['app_address'] ?? 'Chinengundu Mashayamombe Building 95, Cnr N. Mandela & S. V. Muzenda Street, Harare' }}<br>
                         {{ $settings['app_postal_address'] ?? 'P.O. Box HR 480 Harare' }}<br>
-                        <strong>Email:</strong> {{ $settings['app_email'] ?? 'minofsportandarts@gmail.com' }}
+                        <strong>Email:</strong> {{ $settings['app_email'] ?? 'mosrac@kuzana.org.zw' }}
                         &nbsp;|&nbsp;
-                        <strong>Tel:</strong> {{ $settings['app_phone'] ?? '+263242708345' }}
+                        <strong>CC:</strong> {{ $settings['app_email_cc'] ?? 'secretariat@kuzana.org.zw' }}
+                        &nbsp;|&nbsp;
+                        <strong>Tel:</strong> {{ $settings['app_phone'] ?? '+263 772 394036 / +263 717 720 641 / +263 719 226 279 / +263 716 801 385' }}
                     </div>
                 </td>
             </tr>
@@ -255,6 +257,12 @@
                             <th><b>Invoice No</b></th>
                             <td>#{{ $invoice->id }}</td>
                         </tr>
+                        @if($invoice->event)
+                        <tr>
+                            <th><b>Event:</b></th>
+                            <td>{{ $invoice->event->name }}</td>
+                        </tr>
+                        @endif
                         <tr>
                             <th><b>Payment Type:</b></th>
                             <td>{{ $invoice->paymentType->name }}</td>
@@ -269,7 +277,7 @@
                         </tr>
                         <tr>
                             <th><b>Due Date:</b></th>
-                            <td>#{{ Carbon\Carbon::parse($invoice->due_date)->format('jS F Y ') }}</td>
+                            <td>{{ $invoice->due_date ? '#' . Carbon\Carbon::parse($invoice->due_date)->format('jS F Y ') : '-' }}</td>
                         </tr>
                         </tbody>
                     </table>
@@ -428,12 +436,9 @@
                     </table>
                 </td>
                 <td width="50%" style="padding:8px 12px; vertical-align:top; border-left:1px solid #ddd;">
-                    <p style="font-size:11px; color:#555; margin:0 0 6px 0;">
-                        <strong>Payment Reference:</strong> Please use your Invoice No. <strong>#{{ $invoice->id }}</strong> as the payment reference.
-                    </p>
                     <p style="font-size:11px; color:#555; margin:0;">
                         After making payment, submit your proof of payment through the Exhibitor Portal or email to
-                        <strong>{{ $settings['app_email'] ?? 'minofsportandarts@gmail.com' }}</strong>.
+                        <strong>{{ $settings['app_email'] ?? 'mosrac@kuzana.org.zw' }}</strong> (CC: <strong>{{ $settings['app_email_cc'] ?? 'secretariat@kuzana.org.zw' }}</strong>).
                         Payments are only confirmed once verified by the Ministry Finance team.
                     </p>
                 </td>

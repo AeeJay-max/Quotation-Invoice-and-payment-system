@@ -62,6 +62,11 @@
                                                        placeholder="Input your app email">
                                             </div>
                                             <div class="col-md-6 form-group">
+                                                <label for="app_email_cc">CC Email</label>
+                                                <input value="{{$settings['app_email_cc'] ?? ''}}" type="text" class="form-control" name="app_email_cc" id="app_email_cc"
+                                                       placeholder="Input CC email">
+                                            </div>
+                                            <div class="col-md-6 form-group">
                                                 <label for="app_url">App Url</label>
                                                 <input value="{{$settings['app_url'] ?? ''}}" type="url" class="form-control" name="app_url" id="app_url"
                                                        placeholder="Input the app url">

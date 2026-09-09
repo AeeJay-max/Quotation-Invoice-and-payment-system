@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\SendEmailHelper;
 use App\Models\Client;
 use App\Models\EmailTemplate;
+use App\Models\Event;
 use App\Models\Invoice;
 use App\Models\InvoiceEmail;
 use App\Models\InvoiceItem;
@@ -27,7 +28,7 @@ class InvoiceController extends Controller
         if (!Gate::allows('list', 'invoice')) {
             return response()->json(['message' => 'not authorized'], 403);
         }
-        $invoices = Invoice::latest()->has('client')->paginate(15);
+        $invoices = Invoice::with(['client', 'event'])->latest()->has('client')->paginate(15);
         return view('modules.invoice.list-invoice')->with(['invoices' => $invoices]);
     }
 
@@ -41,7 +42,7 @@ class InvoiceController extends Controller
             'search_term' => 'required',
         ]);
 
-        $invoices = Invoice::with('client')
+        $invoices = Invoice::with(['client', 'event'])
             ->whereHas('client', function (Builder $query) use ($request) {
                 $query->where('email', $request->search_term)
                     ->orWhere('company_name', 'like', '%' . $request->search_term . '%')
@@ -61,7 +62,7 @@ class InvoiceController extends Controller
         $due = Carbon::createFromDate('2021', '09', '13');
         $left = Carbon::now()->diffInDays($due);
 
-        $invoice = Invoice::find($id);
+        $invoice = Invoice::with(['client', 'event'])->find($id);
         $templates = EmailTemplate::all();
         $total = 0;
         foreach ($invoice->items as $item) {
@@ -92,11 +93,13 @@ class InvoiceController extends Controller
             return response()->json(['message' => 'not authorized'], 403);
         }
         $clients = Client::all();
+        $events = Event::latest()->get();
         $payment_type = PaymentType::all();
         $payment_status = PaymentStatus::all();
         $payment_currency = PaymentCurrency::all();
         return view('modules.invoice.create-invoice')->with([
             'clients' => $clients,
+            'events' => $events,
             'payment_type' => $payment_type,
             'payment_status' => $payment_status,
             'payment_currency' => $payment_currency,
@@ -111,6 +114,7 @@ class InvoiceController extends Controller
         }
         $invoice = Invoice::find($id);
         $clients = Client::all();
+        $events = Event::latest()->get();
         $payment_type = PaymentType::all();
         $payment_status = PaymentStatus::all();
         $payment_currency = PaymentCurrency::all();
@@ -121,6 +125,7 @@ class InvoiceController extends Controller
         }
         return view('modules.invoice.create-invoice')->with([
             'clients' => $clients,
+            'events' => $events,
             'payment_type' => $payment_type,
             'payment_status' => $payment_status,
             'payment_currency' => $payment_currency,
@@ -138,10 +143,11 @@ class InvoiceController extends Controller
 
         $request->validate([
             'client_id' => 'required',
+            'event_id' => 'nullable',
             'create_date' => 'required',
-            'due_date' => 'required',
+            'due_date' => 'nullable',
             'payment_type' => 'required',
-            'payment_status' => 'required',
+            'payment_status' => 'nullable',
             'payment_currency' => 'required',
             'quantity.*' => 'required',
             'unit_price.*' => 'required',
@@ -152,6 +158,7 @@ class InvoiceController extends Controller
 
         $invoice = Invoice::create([
             'client_id' => $request->client_id,
+            'event_id' => $request->event_id,
             'user_id' => Auth::id(),
             'create_date' => $request->create_date,
             'due_date' => $request->due_date,
@@ -185,6 +192,7 @@ class InvoiceController extends Controller
         }
         $invoice = Invoice::find($id);
         $clients = Client::all();
+        $events = Event::latest()->get();
         $payment_type = PaymentType::all();
         $payment_status = PaymentStatus::all();
         $payment_currency = PaymentCurrency::all();
@@ -194,6 +202,7 @@ class InvoiceController extends Controller
         }
         return view('modules.invoice.edit-invoice')->with([
             'clients' => $clients,
+            'events' => $events,
             'payment_type' => $payment_type,
             'payment_status' => $payment_status,
             'payment_currency' => $payment_currency,
@@ -211,10 +220,11 @@ class InvoiceController extends Controller
 
         $request->validate([
             'client_id' => 'required',
+            'event_id' => 'nullable',
             'create_date' => 'required',
-            'due_date' => 'required',
+            'due_date' => 'nullable',
             'payment_type' => 'required',
-            'payment_status' => 'required',
+            'payment_status' => 'nullable',
             'payment_currency' => 'required',
             'quantity.*' => 'required',
             'unit_price.*' => 'required',
@@ -225,6 +235,7 @@ class InvoiceController extends Controller
 
         $invoice = Invoice::find($id);
         $invoice->client_id = $request->client_id;
+        $invoice->event_id = $request->event_id;
         $invoice->user_id = Auth::id();
         $invoice->create_date = $request->create_date;
         $invoice->due_date = $request->due_date;

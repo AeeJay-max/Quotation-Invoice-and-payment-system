@@ -30,6 +30,7 @@
                 <tr>
                     <th>id</th>
                     <th>client</th>
+                    <th>event</th>
                     <th>company</th>
                     <th>created</th>
                     <th>due</th>
@@ -41,9 +42,10 @@
                     <tr class="ok">
                         <td>ID{{$invoice->id}}</td>
                         <td>{{$invoice->client->name}}</td>
+                        <td>{{$invoice->event->name ?? '-'}}</td>
                         <td>{{$invoice->client->company_name}}</td>
                         <td>{{\Carbon\Carbon::parse($invoice->create_date)->format('M d Y ')}}</td>
-                        <td>{{Carbon\Carbon::parse($invoice->due_date)->format('M d Y')}}</td>
+                        <td>{{ $invoice->due_date ? \Carbon\Carbon::parse($invoice->due_date)->format('M d Y') : '-' }}</td>
                         <td>
                             <a href="/invoice/view/{{$invoice->id}}" class="btn btn-info" title="View invoice"><i class="fa fa-eye"></i></a>
                             <a href="/invoice/edit/{{$invoice->id}}" class="btn btn-primary" title="Edit invoice"><i class="fa fa-pen"></i></a>

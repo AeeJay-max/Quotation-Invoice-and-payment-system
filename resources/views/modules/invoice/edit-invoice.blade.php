@@ -14,7 +14,7 @@
                 <form id="invoice_form" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label for="client">Select Client</label>
                                 <div class="row">
@@ -27,7 +27,7 @@
                                     </div>
                                     <div class="col-lg-10">
                                         <select id="client" name="client_id" class="form-control client_id select2 w-100">
-                                            <option>Select Client</option>
+                                            <option value="">Select Client</option>
                                             @foreach($clients as $client)
                                                 <option @if(isset($invoice))
                                                         @if($invoice->client_id == $client->id)
@@ -43,7 +43,21 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label for="event">Select Event</label>
+                                <select id="event" name="event_id" class="form-control event_id select2 w-100">
+                                    <option value="">Select Event (Optional)</option>
+                                    @foreach($events as $event)
+                                        <option @if(isset($invoice) && $invoice->event_id == $event->id) selected @endif value="{{$event->id}}">
+                                            {{$event->name}}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <span class="invalid-feedback event_id"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label for="create-date">Create Date</label>
                                 <div class="input-group date" id="create-date" data-target-input="nearest">
@@ -59,12 +73,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label for="due-date">Due Date</label>
                                 <div class="input-group date" id="due-date" data-target-input="nearest">
                                     <input
-                                        @if(isset($invoice)) value="{{\Carbon\Carbon::parse($invoice->due_date)->format('m/d/y')}}" @endif
+                                        @if(isset($invoice) && $invoice->due_date) value="{{\Carbon\Carbon::parse($invoice->due_date)->format('m/d/y')}}" @endif
                                     id="due-date" name="due_date" type="text"
                                         class="form-control due_date datetimepicker-input" data-target="#due-date"/>
                                     <div class="input-group-append" data-target="#due-date"

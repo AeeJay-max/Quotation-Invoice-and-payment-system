@@ -33,14 +33,16 @@
             </div>
             <div style="flex:1;">
                 <div style="font-size:16px; font-weight:700; color:#1a5c1a; text-transform:uppercase; letter-spacing:0.5px; line-height:1.3;">
-                    {{ $global_settings['app_name'] ?? 'Ministry of Sports, Recreation, Arts and Culture' }}
+                    {{ $global_settings['app_name'] ?? 'Ministry of Sport, Recreation, Arts and Culture' }}
                 </div>
                 <div style="font-size:12px; color:#555; margin-top:4px; line-height:1.8;">
                     {{ $global_settings['app_address'] ?? 'Chinengundu Mashayamombe Building 95, Cnr N. Mandela & S. V. Muzenda Street, Harare' }}<br>
                     {{ $global_settings['app_postal_address'] ?? 'P.O. Box HR 480 Harare' }}<br>
-                    <strong>Email:</strong> {{ $global_settings['app_email'] ?? 'minofsportandarts@gmail.com' }}
+                    <strong>Email:</strong> {{ $global_settings['app_email'] ?? 'mosrac@kuzana.org.zw' }}
                     &nbsp;|&nbsp;
-                    <strong>Tel:</strong> {{ $global_settings['app_phone'] ?? '+263242708345' }}
+                    <strong>CC:</strong> {{ $global_settings['app_email_cc'] ?? 'secretariat@kuzana.org.zw' }}
+                    &nbsp;|&nbsp;
+                    <strong>Tel:</strong> {{ $global_settings['app_phone'] ?? '+263 772 394036 / +263 717 720 641 / +263 719 226 279 / +263 716 801 385' }}
                 </div>
             </div>
             <div class="text-right" style="flex-shrink:0; margin-left:20px;">
@@ -180,7 +182,7 @@
                         </div>
                         <p class="small text-muted mt-2 mb-0">
                             After payment, upload proof via the Exhibitor Portal or email
-                            <strong>{{ $global_settings['app_email'] ?? 'minofsportandarts@gmail.com' }}</strong>.
+                            <strong>{{ $global_settings['app_email'] ?? 'mosrac@kuzana.org.zw' }}</strong> (CC: <strong>{{ $global_settings['app_email_cc'] ?? 'secretariat@kuzana.org.zw' }}</strong>).
                             Payment is only confirmed after Ministry Finance verification.
                         </p>
                     </div>

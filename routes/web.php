@@ -156,6 +156,37 @@ Route::group([], function () {
             Route::post('payments/{id}/verify', [\App\Http\Controllers\PaymentController::class, 'adminVerifyPayment'])->name('payments.verify');
             Route::post('payments/{id}/reject', [\App\Http\Controllers\PaymentController::class, 'adminRejectPayment'])->name('payments.reject');
             Route::get('payments/{id}/proof', [\App\Http\Controllers\PaymentController::class, 'adminServeProof'])->name('payments.proof');
+
+            // --- Multi-Event Modules & Active Context Switcher ---
+            Route::post('set-active-event', function (\Illuminate\Http\Request $request) {
+                $eventId = $request->get('event_id');
+                if ($eventId === 'all') {
+                    session()->forget('selected_event_id');
+                    session(['global_mode' => true]);
+                } else {
+                    session()->forget('global_mode');
+                    session(['selected_event_id' => $eventId]);
+                }
+                return back()->with('success', 'Active event context updated.');
+            })->name('set-event');
+
+            Route::resource('venues', \App\Http\Controllers\VenueController::class);
+            Route::post('venues/{id}/halls', [\App\Http\Controllers\VenueController::class, 'storeHall'])->name('venues.halls.store');
+            Route::resource('tickets', \App\Http\Controllers\TicketController::class);
+            
+            Route::get('checkin', [\App\Http\Controllers\CheckinController::class, 'index'])->name('checkin.index');
+            Route::get('checkin/scanner', [\App\Http\Controllers\CheckinController::class, 'scanner'])->name('checkin.scanner');
+            Route::post('checkin/scan', [\App\Http\Controllers\CheckinController::class, 'scan'])->name('checkin.scan');
+
+            Route::resource('speakers', \App\Http\Controllers\SpeakerController::class);
+            Route::resource('programme', \App\Http\Controllers\EventProgrammeController::class);
+            Route::resource('sponsors', \App\Http\Controllers\SponsorController::class);
+            Route::resource('vendors', \App\Http\Controllers\VendorController::class);
+            Route::resource('tasks', \App\Http\Controllers\TaskController::class);
+            Route::post('tasks/{id}/status', [\App\Http\Controllers\TaskController::class, 'updateStatus'])->name('tasks.status');
+
+            Route::get('reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+            Route::get('reports/export/{type}', [\App\Http\Controllers\ReportController::class, 'export'])->name('reports.export');
         });
     });
 
@@ -189,5 +220,8 @@ Route::group([], function () {
     Route::post('booking/submit', [\App\Http\Controllers\EventBookingWizardController::class, 'submitQuotation'])->name('public.booking.submit');
     Route::get('quotation/public/{id}', [\App\Http\Controllers\EventBookingWizardController::class, 'showPublicQuotation'])->name('public.quotation.view');
     Route::post('quotation/public/{id}/confirm', [\App\Http\Controllers\EventBookingWizardController::class, 'confirmQuotation'])->name('public.quotation.confirm');
+
+    // Public Event Landing Page
+    Route::get('events/{id}', [\App\Http\Controllers\PublicEventController::class, 'show'])->name('public.events.show');
 
 });

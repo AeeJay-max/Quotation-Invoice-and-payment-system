@@ -14,7 +14,7 @@
                 <form id="invoice_form" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label for="client">Select Client</label>
                                 <div class="row">
@@ -30,6 +30,7 @@
                                             <option value="">Select Client</option>
                                             @foreach($clients as $client)
                                                 <option
+                                                    @if(isset($invoice) && $invoice->client_id == $client->id) selected @endif
                                                     value="{{$client->id}}">{{$client->name}}
                                                     ({{$client->company_name}})
                                                 </option>
@@ -40,7 +41,22 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label for="event">Select Event</label>
+                                <select id="event" name="event_id" class="form-control event_id select2 w-100">
+                                    <option value="">Select Event (Optional)</option>
+                                    @foreach($events as $event)
+                                        <option
+                                            @if(isset($invoice) && $invoice->event_id == $event->id) selected @endif
+                                            value="{{$event->id}}">{{$event->name}}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <span class="invalid-feedback event_id"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label for="create-date">Create Date</label>
                                 <div class="input-group date" data-target-input="nearest">
@@ -56,7 +72,7 @@
                                 <span class="invalid-feedback create_date"></span>
                             </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label for="due-date">Due Date</label>
                                 <div class="input-group date" data-target-input="nearest">

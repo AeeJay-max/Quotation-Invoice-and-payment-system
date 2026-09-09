@@ -367,8 +367,8 @@
                                 <span style="font-size: 20px;"><strong>{{ $settings['app_name'] ?? '' }}</strong></span>
                                 <span><strong>Address:  </strong>{{ $settings['app_address'] ?? '' }}</span>
                                 <span>
-                                    <strong>Email(s):  </strong>
-                                    {!! implode('<br>', explode(',', $settings['app_email'])) !!}
+                                    <strong>Email:  </strong>{{ $settings['app_email'] ?? 'mosrac@kuzana.org.zw' }}
+                                    &nbsp;|&nbsp;<strong>CC:  </strong>{{ $settings['app_email_cc'] ?? 'secretariat@kuzana.org.zw' }}
                                 </span>
                                <span> <strong>Phone Number(s):  </strong>{!! implode('<br>', explode(',', $settings['app_phone'])) !!}</span>
                             </td>
@@ -397,6 +397,12 @@
                                             <th><b>Invoice No</b></th>
                                             <td>#{{ $invoice->id }}</td>
                                         </tr>
+                                        @if($invoice->event)
+                                        <tr>
+                                            <th><b>Event:</b></th>
+                                            <td>{{ $invoice->event->name }}</td>
+                                        </tr>
+                                        @endif
                                         <tr>
                                             <th><b>Payment Type:</b></th>
                                             <td>{{ $invoice->paymentType->name }}</td>
@@ -412,7 +418,7 @@
                                         </tr>
                                         <tr>
                                             <th><b>Due Date:</b></th>
-                                            <td>#{{ Carbon\Carbon::parse($invoice->due_date)->format('jS F Y ') }}</td>
+                                            <td>{{ $invoice->due_date ? '#' . Carbon\Carbon::parse($invoice->due_date)->format('jS F Y ') : '-' }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -594,13 +600,9 @@
                                 </table>
                             </div>
                             <div style="flex:1; border-left:1px solid #eee; padding-left:16px; font-size:12px; color:#555;">
-                                <p style="margin:0 0 6px 0;">
-                                    <strong>Payment Reference:</strong> Use Invoice No.
-                                    <strong>#{{ $invoice->id }}</strong> as your payment reference.
-                                </p>
                                 <p style="margin:0;">
                                     Submit proof of payment via the Exhibitor Portal or email
-                                    <strong>{{ $settings['app_email'] ?? 'minofsportandarts@gmail.com' }}</strong>.
+                                     <strong>{{ $settings['app_email'] ?? 'mosrac@kuzana.org.zw' }}</strong> (CC: <strong>{{ $settings['app_email_cc'] ?? 'secretariat@kuzana.org.zw' }}</strong>).
                                     Payments are confirmed only after Ministry Finance verification.
                                 </p>
                             </div>
