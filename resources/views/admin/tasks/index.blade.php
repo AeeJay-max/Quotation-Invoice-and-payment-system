@@ -2,13 +2,13 @@
 @section('title', 'Event Tasks & Operations')
 
 @section('content')
-<div class="content-wrapper p-4">
+<div class="p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="font-weight-bold text-dark mb-1">Event Preparation Tasks</h2>
             <p class="text-muted mb-0">Track staff assignments, operational tasks, priorities, and deadlines.</p>
         </div>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#createTaskModal">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createTaskModal">
             <i class="fas fa-plus mr-1"></i> Assign New Task
         </button>
     </div>
@@ -91,7 +91,9 @@
         {{ $tasks->links() }}
     </div>
 </div>
+@endsection
 
+@section('modals')
 <!-- Modal for Creating Task -->
 <div class="modal fade" id="createTaskModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">

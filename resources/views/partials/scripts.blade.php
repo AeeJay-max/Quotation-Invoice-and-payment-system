@@ -100,11 +100,17 @@ function loadPageContent(url, pushState = true) {
         const doc = parser.parseFromString(html, 'text/html');
 
         const newContent = doc.querySelector('.content-wrapper');
+        const newModals = doc.querySelector('#app-modals');
+        const appModals = document.querySelector('#app-modals');
         const newTitle = doc.querySelector('title');
 
         if (newContent) {
             contentWrapper.innerHTML = newContent.innerHTML;
             contentWrapper.style.opacity = '1';
+
+            if (newModals && appModals) {
+                appModals.innerHTML = newModals.innerHTML;
+            }
             
             if (newTitle) {
                 document.title = newTitle.innerText;
@@ -153,8 +159,11 @@ function loadPageContent(url, pushState = true) {
                 }
             });
 
-            // Re-initialize Select2 and Flash Alerts
+            // Clean up modal backdrops and states on page load
             if (window.jQuery) {
+                $('.modal').modal('hide');
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css('padding-right', '');
                 if ($.fn.select2) {
                     $('.select2').select2();
                 }

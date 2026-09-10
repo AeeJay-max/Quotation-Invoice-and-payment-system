@@ -2,13 +2,13 @@
 @section('title', 'Speakers Directory')
 
 @section('content')
-<div class="content-wrapper p-4">
+<div class="p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="font-weight-bold text-dark mb-1">Speaker Directory</h2>
             <p class="text-muted mb-0">Manage keynote speakers, panelists, and session moderators for MOSRAC conferences.</p>
         </div>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#createSpeakerModal">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createSpeakerModal">
             <i class="fas fa-user-plus mr-1"></i> Add Speaker Profile
         </button>
     </div>
@@ -51,7 +51,9 @@
 
     {{ $speakers->links() }}
 </div>
+@endsection
 
+@section('modals')
 <!-- Modal for Creating Speaker -->
 <div class="modal fade" id="createSpeakerModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">

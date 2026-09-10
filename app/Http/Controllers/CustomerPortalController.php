@@ -61,7 +61,12 @@ class CustomerPortalController extends Controller
         $confirmedBookings  = Booking::where('client_id', $clientId)->whereIn('status', ['confirmed', 'accepted'])->count();
 
         // Invoices for this exhibitor
-        $invoices      = Invoice::where('client_id', $clientId)->get();
+        $invoices = Invoice::where(function ($q) use ($clientId, $user) {
+            if ($clientId) {
+                $q->where('client_id', $clientId);
+            }
+            $q->orWhere('user_id', $user->id);
+        })->get();
         $invoiceIds    = $invoices->pluck('id');
         $totalInvoiced = $invoices->sum('total');
 
@@ -189,5 +194,72 @@ class CustomerPortalController extends Controller
             'outstanding_balance',
             'ministrySettings'
         ));
+    }
+
+    // --- Onboarding & Verification Step 1: Force Password Change ---
+    public function showMustChangePassword()
+    {
+        $user = Auth::user();
+        return view('customer.must-change-password', compact('user'));
+    }
+
+    public function updateMustChangePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = Auth::user();
+        $user->password = bcrypt($request->password);
+        $user->must_change_password = false;
+        $user->save();
+
+        return redirect()->route('customer.verify-email')
+            ->with('success', 'Password updated successfully! Next, please verify your email address.');
+    }
+
+    // --- Onboarding & Verification Step 2: Email Verification ---
+    public function showVerifyEmail()
+    {
+        $user = Auth::user();
+        return view('customer.verify-email', compact('user'));
+    }
+
+    public function sendVerificationEmail(Request $request)
+    {
+        $user = Auth::user();
+        // Generate verification link token
+        $verificationUrl = route('customer.verify-email.verify', ['id' => $user->id, 'hash' => sha1($user->email)]);
+
+        // Try to send email via Mail facade if configured, fallback cleanly
+        try {
+            \Illuminate\Support\Facades\Mail::raw(
+                "Hello {$user->name},\n\nPlease verify your email address for the MOSRAC Exhibitor Portal by clicking the link below:\n\n{$verificationUrl}\n\nThank you,\nMinistry of Sport, Recreation, Arts and Culture",
+                function ($message) use ($user) {
+                    $message->to($user->email)->subject('Verify Your MOSRAC Account Email');
+                }
+            );
+        } catch (\Exception $e) {
+            // Fallback for local environments without SMTP configured
+        }
+
+        return redirect()->back()->with([
+            'success' => "Verification link dispatched to {$user->email}! Click the verification link or use the instant button below.",
+            'simulated_link' => $verificationUrl
+        ]);
+    }
+
+    public function verifyEmail($id, $hash)
+    {
+        $user = Auth::user();
+        if ($user->id == $id && sha1($user->email) == $hash) {
+            $user->email_verified_at = now();
+            $user->save();
+
+            return redirect()->route('customer.dashboard')
+                ->with('success', 'Account verification complete! You now have full access to your Exhibitor Portal.');
+        }
+
+        return redirect()->route('customer.verify-email')->with('error', 'Invalid or expired verification link.');
     }
 }

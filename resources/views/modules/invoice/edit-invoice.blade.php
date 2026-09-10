@@ -75,15 +75,18 @@
                         </div>
                         <div class="col-lg-3">
                             <div class="form-group">
-                                <label for="due-date">Due Date</label>
-                                <div class="input-group date" id="due-date" data-target-input="nearest">
+                                <label for="due-date">Due Date <small class="text-muted">(optional)</small></label>
+                                <div class="input-group">
                                     <input
                                         @if(isset($invoice) && $invoice->due_date) value="{{\Carbon\Carbon::parse($invoice->due_date)->format('m/d/y')}}" @endif
-                                    id="due-date" name="due_date" type="text"
-                                        class="form-control due_date datetimepicker-input" data-target="#due-date"/>
-                                    <div class="input-group-append" data-target="#due-date"
-                                         data-toggle="datetimepicker">
-                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        id="due-date" name="due_date" type="text"
+                                        placeholder="Select a due date"
+                                        class="form-control due_date" autocomplete="off"/>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" style="cursor:pointer" id="due-date-toggle"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text text-danger" style="cursor:pointer" id="due-date-clear" title="Clear date"><i class="fa fa-times"></i></span>
                                     </div>
                                 </div>
                                 <span class="invalid-feedback due_date"></span>
@@ -416,12 +419,28 @@
             startDate: moment().subtract(6, 'days')
         });
 
-        //Date range picker
+        //Due date picker — optional field, not forced
+        var existingDueDate = $('#due-date').val();
         $('#due-date').daterangepicker({
             singleDatePicker: true,
             showDropdowns: true,
-            autoUpdateInput: true,
-            startDate: moment().subtract(6, 'days')
+            autoUpdateInput: false,
+            startDate: existingDueDate ? moment(existingDueDate, 'MM/DD/YY') : moment()
+        });
+        // Pre-fill if editing an existing invoice with a due date
+        if (existingDueDate) {
+            $('#due-date').val(existingDueDate);
+        }
+        // Only write value when the user explicitly picks a date
+        $('#due-date').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YY'));
+        });
+        // Allow clearing the date completely
+        $('#due-date-clear').on('click', function() {
+            $('#due-date').val('');
+        });
+        $('#due-date-toggle').on('click', function() {
+            $('#due-date').trigger('click');
         });
     </script>
 @endpush

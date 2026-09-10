@@ -55,21 +55,52 @@ class ClientController extends Controller
             return response()->json(['message'=>'not authorized'], 403);
         }
         $request->validate([
-            'company_name' => 'required',
-            'phone' => 'required',
-            'email' => 'required',
+            'name' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:50',
+            'email' => 'required|email|max:255',
         ]);
 
-        Client::create([
-            'user_id' => Auth::id(),
+        $defaultPassword = $request->get('password', 'password');
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+        if (!$user) {
+            $customerRole = \App\Models\Role::firstOrCreate(['name' => 'Customer']);
+            $user = \App\Models\User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($defaultPassword),
+                'phone' => $request->phone,
+                'status' => true,
+                'is_admin' => false,
+                'role_id' => $customerRole->id,
+                'must_change_password' => true,
+                'created_by_admin' => true,
+                'email_verified_at' => null,
+            ]);
+        } else {
+            $user->update([
+                'must_change_password' => true,
+                'created_by_admin' => true,
+                'email_verified_at' => null,
+            ]);
+        }
+
+        $client = Client::create([
+            'user_id' => $user->id,
             'name' => $request->name,
             'company_name' => $request->company_name,
-            'address' => $request->address,
+            'address' => $request->address ?? 'N/A',
             'phone' => $request->phone,
             'email' => $request->email,
+            'registration_number' => $request->registration_number ?? null,
+            'position' => $request->position ?? null,
+            'country' => $request->country ?? 'Zimbabwe',
         ]);
 
-        return redirect()->back()->with(['success' => 'client created successfully']);
+        $user->update(['client_id' => $client->id]);
+
+        return redirect()->back()->with(['success' => "Exhibitor / Client registered successfully with default password '{$defaultPassword}'. The client will be required to change password and verify email upon initial login."]);
     }
 
     //edit client

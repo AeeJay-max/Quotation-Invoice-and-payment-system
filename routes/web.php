@@ -196,6 +196,13 @@ Route::group([], function () {
 
         // --- Customer Portal Routes ---
         Route::group(['prefix' => 'customer', 'as' => 'customer.', 'middleware' => 'customer'], function () {
+            // Customer Security Onboarding (Password Change & Email Verification)
+            Route::get('must-change-password', [\App\Http\Controllers\CustomerPortalController::class, 'showMustChangePassword'])->name('must-change-password');
+            Route::post('must-change-password', [\App\Http\Controllers\CustomerPortalController::class, 'updateMustChangePassword'])->name('must-change-password.update');
+            Route::get('verify-email', [\App\Http\Controllers\CustomerPortalController::class, 'showVerifyEmail'])->name('verify-email');
+            Route::post('verify-email/send', [\App\Http\Controllers\CustomerPortalController::class, 'sendVerificationEmail'])->name('verify-email.send');
+            Route::get('verify/{id}/{hash}', [\App\Http\Controllers\CustomerPortalController::class, 'verifyEmail'])->name('verify-email.verify');
+
             Route::get('dashboard', [\App\Http\Controllers\CustomerPortalController::class, 'dashboard'])->name('dashboard');
             Route::get('bookings', [\App\Http\Controllers\CustomerPortalController::class, 'bookings'])->name('bookings.index');
             Route::get('bookings/{id}', [\App\Http\Controllers\CustomerPortalController::class, 'showBooking'])->name('bookings.show');

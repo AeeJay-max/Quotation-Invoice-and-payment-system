@@ -16,8 +16,9 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'status' => 'boolean',
         'is_admin' => 'boolean',
+        'must_change_password' => 'boolean',
+        'created_by_admin' => 'boolean',
         'email_verified_at' => 'datetime',
-
     ];
 
     protected $fillable = [
@@ -30,6 +31,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'role_id',
         'client_id',
         'id_number',
+        'must_change_password',
+        'created_by_admin',
+        'email_verified_at',
         'profile_photo_path',
         'signature_path'
     ];

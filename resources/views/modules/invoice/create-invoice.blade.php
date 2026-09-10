@@ -74,15 +74,18 @@
                         </div>
                         <div class="col-lg-3">
                             <div class="form-group">
-                                <label for="due-date">Due Date</label>
-                                <div class="input-group date" data-target-input="nearest">
+                                <label for="due-date">Due Date <small class="text-muted">(optional)</small></label>
+                                <div class="input-group">
                                     <input
                                         value=""
                                         id="due-date" name="due_date" type="text"
-                                        class="form-control due_date datetimepicker-input" data-target="#due-date"/>
-                                    <div class="input-group-append" data-target="#due-date"
-                                         data-toggle="datetimepicker">
-                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        placeholder="Select a due date"
+                                        class="form-control due_date" autocomplete="off"/>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" style="cursor:pointer" id="due-date-toggle"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text text-danger" style="cursor:pointer" id="due-date-clear" title="Clear date"><i class="fa fa-times"></i></span>
                                     </div>
                                 </div>
                                 <span class="invalid-feedback due_date"></span>
@@ -419,12 +422,23 @@ window.location.href = response.redirect;
             startDate: moment().subtract(6, 'days')
         });
 
-        //Date range picker
+        //Due date picker — optional field, not forced
         $('#due-date').daterangepicker({
             singleDatePicker: true,
             showDropdowns: true,
-            autoUpdateInput: true,
-            startDate: moment().subtract(6, 'days')
+            autoUpdateInput: false,
+            startDate: moment()
+        });
+        // Only write value when the user explicitly picks a date
+        $('#due-date').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YY'));
+        });
+        // Allow clearing the date completely
+        $('#due-date-clear').on('click', function() {
+            $('#due-date').val('');
+        });
+        $('#due-date-toggle').on('click', function() {
+            $('#due-date').trigger('click');
         });
     </script>
 @endpush

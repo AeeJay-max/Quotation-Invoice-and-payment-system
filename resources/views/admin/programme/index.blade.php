@@ -2,13 +2,13 @@
 @section('title', 'Programme & Sessions Agenda')
 
 @section('content')
-<div class="content-wrapper p-4">
+<div class="p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="font-weight-bold text-dark mb-1">Programme & Sessions Agenda</h2>
             <p class="text-muted mb-0">Schedule event sessions, workshops, panel discussions, and keynotes.</p>
         </div>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#createSessionModal">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createSessionModal">
             <i class="fas fa-plus mr-1"></i> Schedule Session
         </button>
     </div>
@@ -68,7 +68,9 @@
         {{ $sessions->links() }}
     </div>
 </div>
+@endsection
 
+@section('modals')
 <!-- Modal for Creating Session -->
 <div class="modal fade" id="createSessionModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">

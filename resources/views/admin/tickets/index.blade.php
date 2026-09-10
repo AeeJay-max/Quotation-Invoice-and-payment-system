@@ -2,13 +2,13 @@
 @section('title', 'Ticket Issuance')
 
 @section('content')
-<div class="content-wrapper p-4">
+<div class="p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="font-weight-bold text-dark mb-1">Ticket Issuance Management</h2>
             <p class="text-muted mb-0">Manage general admission, VIP, media, speaker, and delegate event passes.</p>
         </div>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#issueTicketModal">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#issueTicketModal">
             <i class="fas fa-ticket-alt mr-1"></i> Issue New Ticket
         </button>
     </div>
@@ -68,7 +68,9 @@
         {{ $tickets->links() }}
     </div>
 </div>
+@endsection
 
+@section('modals')
 <!-- Modal for Ticket Issuance -->
 <div class="modal fade" id="issueTicketModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">

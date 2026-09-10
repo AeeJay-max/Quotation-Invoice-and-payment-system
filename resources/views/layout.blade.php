@@ -23,8 +23,14 @@
 
 @include('partials/side-bar')
 
+<div class="content-wrapper">
 @section('content')
 @show
+</div>
+
+<div id="app-modals">
+@yield('modals')
+</div>
 
 </div>
 @include('partials.footer')

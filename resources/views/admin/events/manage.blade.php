@@ -24,7 +24,7 @@
             <div class="card card-outline card-primary shadow-sm h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title font-weight-bold mb-0"><i class="fas fa-warehouse mr-2"></i> Exhibition Halls & Spaces</h5>
-                    <button class="btn btn-sm btn-primary font-weight-bold" data-toggle="modal" data-target="#modalAddSpace">+ Add Space</button>
+                    <button type="button" class="btn btn-sm btn-primary font-weight-bold" data-toggle="modal" data-target="#modalAddSpace">+ Add Space</button>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
@@ -35,7 +35,7 @@
                                         <h6 class="font-weight-bold mb-1">{{ $space->name }} ({{ $space->code }})</h6>
                                         <p class="small text-muted mb-0">${{ number_format($space->price_per_sqm, 2) }}/m² | Max: {{ $space->max_size }}m²</p>
                                     </div>
-                                    <button class="btn btn-xs btn-outline-info" data-toggle="modal" data-target="#modalAddPosition{{ $space->id }}">+ Position</button>
+                                    <button type="button" class="btn btn-xs btn-outline-info" data-toggle="modal" data-target="#modalAddPosition{{ $space->id }}">+ Position</button>
                                 </div>
 
                                 <!-- Position List -->
@@ -65,7 +65,7 @@
             <div class="card card-outline card-success shadow-sm h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title font-weight-bold mb-0"><i class="fas fa-store mr-2"></i> Stand Package Types</h5>
-                    <button class="btn btn-sm btn-success font-weight-bold" data-toggle="modal" data-target="#modalAddStand">+ Add Stand Type</button>
+                    <button type="button" class="btn btn-sm btn-success font-weight-bold" data-toggle="modal" data-target="#modalAddStand">+ Add Stand Type</button>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
@@ -90,7 +90,7 @@
             <div class="card card-outline card-warning shadow-sm h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title font-weight-bold mb-0"><i class="fas fa-chair mr-2"></i> Furniture Rental Catalogue</h5>
-                    <button class="btn btn-sm btn-warning font-weight-bold text-dark" data-toggle="modal" data-target="#modalAddFurniture">+ Add Item</button>
+                    <button type="button" class="btn btn-sm btn-warning font-weight-bold text-dark" data-toggle="modal" data-target="#modalAddFurniture">+ Add Item</button>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
@@ -115,7 +115,7 @@
             <div class="card card-outline card-info shadow-sm h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title font-weight-bold mb-0"><i class="fas fa-plug mr-2"></i> Additional Event Services</h5>
-                    <button class="btn btn-sm btn-info font-weight-bold" data-toggle="modal" data-target="#modalAddService">+ Add Service</button>
+                    <button type="button" class="btn btn-sm btn-info font-weight-bold" data-toggle="modal" data-target="#modalAddService">+ Add Service</button>
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
@@ -140,7 +140,7 @@
             <div class="card card-outline card-secondary shadow-sm">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title font-weight-bold mb-0"><i class="fas fa-ticket-alt mr-2"></i> Attendee Pass & Ticket Types</h5>
-                    <button class="btn btn-sm btn-secondary font-weight-bold" data-toggle="modal" data-target="#modalAddAttendeeType">+ Add Ticket Type</button>
+                    <button type="button" class="btn btn-sm btn-secondary font-weight-bold" data-toggle="modal" data-target="#modalAddAttendeeType">+ Add Ticket Type</button>
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-hover mb-0">

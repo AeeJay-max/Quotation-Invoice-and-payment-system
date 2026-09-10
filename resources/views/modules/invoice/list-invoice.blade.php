@@ -7,22 +7,23 @@
 @section('content')
     <div class="content-wrapper">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-3 mb-3">
+            <div class="row mb-3 align-items-center">
+                <div class="col-lg-5">
                     <form action="/invoice/search" method="get" enctype="multipart/form-data">
                         @csrf
                         <div class="input-group">
-                            <input name="search_term" type="text" class="form-control" placeholder="Seach by client name, email or company name">
+                            <input name="search_term" type="text" class="form-control" placeholder="Search by client name, email or company name">
                             <span class="input-group-btn">
-                                               <button type="submit" class="btn  btn-success "><i
-                                                       class="fa fa-search"></i></button>
-                                           </span>
-
+                                <button type="submit" class="btn btn-success"><i class="fa fa-search"></i></button>
+                            </span>
                         </div>
                     </form>
                 </div>
-                <div class="col-lg-3">
-                    <a href="/invoice " class="btn btn-primary">All</a>
+                <div class="col-lg-7 text-right">
+                    <a href="/invoice" class="btn btn-secondary mr-2"><i class="fa fa-list mr-1"></i>All</a>
+                    @can('create', 'invoice')
+                    <a href="/invoice/create" class="btn btn-success"><i class="fa fa-plus mr-1"></i>Create Invoice</a>
+                    @endcan
                 </div>
             </div>
             <table class="table table-striped table-bordered table-list">
