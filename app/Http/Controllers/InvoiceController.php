@@ -171,14 +171,25 @@ class InvoiceController extends Controller
             'vat' => $request->vat ?? 0
         ]);
 
+        $subtotal = 0;
         foreach ($request->quantity as $key => $value) {
             InvoiceItem::create([
                 'invoice_id' => $invoice->id,
-                'quantity' => $request->quantity[$key],
-                'description' => $request->description[$key],
+                'quantity'   => $request->quantity[$key],
+                'description'=> $request->description[$key],
                 'unit_price' => $request->unit_price[$key],
             ]);
+            $subtotal += $request->quantity[$key] * $request->unit_price[$key];
         }
+
+        $vatAmount   = $subtotal * (($invoice->vat ?? 0) / 100);
+        $discount    = floatval($invoice->discount ?? 0);
+        $grandTotal  = $subtotal + $vatAmount - $discount;
+        $invoice->update([
+            'total'              => $grandTotal,
+            'amount_paid'        => 0,
+            'amount_outstanding' => $grandTotal,
+        ]);
 
         return response()->json(['redirect'=>route('invoice.view', ['id'=>$invoice->id])]);
 
@@ -251,14 +262,25 @@ class InvoiceController extends Controller
         $items = InvoiceItem::where('invoice_id', $invoice->id);
         $items->delete();
 
+        $subtotal = 0;
         foreach ($request->quantity as $key => $value) {
             InvoiceItem::create([
                 'invoice_id' => $invoice->id,
-                'quantity' => $request->quantity[$key],
-                'description' => $request->description[$key],
+                'quantity'   => $request->quantity[$key],
+                'description'=> $request->description[$key],
                 'unit_price' => $request->unit_price[$key],
             ]);
+            $subtotal += $request->quantity[$key] * $request->unit_price[$key];
         }
+
+        $vatAmount   = $subtotal * (($invoice->vat ?? 0) / 100);
+        $discount    = floatval($invoice->discount ?? 0);
+        $grandTotal  = $subtotal + $vatAmount - $discount;
+        $amountPaid  = floatval($invoice->amount_paid ?? 0);
+        $invoice->update([
+            'total'              => $grandTotal,
+            'amount_outstanding' => max(0, $grandTotal - $amountPaid),
+        ]);
 
         return response()->json(['redirect'=>route('invoice.view', ['id'=>$invoice->id])]);
     }

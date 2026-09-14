@@ -129,7 +129,12 @@
                     <tr>
                         <th>Item Description</th>
                         <th class="text-center" style="width:80px;">Qty</th>
-                        <th class="text-right" style="width:120px;">Unit Price</th>
+                        <th class="text-right" style="width:120px;">
+                            Unit Price
+                            @if($invoice->payment_currency == 2)
+                                <small class="font-weight-normal text-warning">(USD)</small>
+                            @endif
+                        </th>
                         <th class="text-right" style="width:130px;">Total</th>
                     </tr>
                 </thead>
@@ -160,8 +165,20 @@
                     </tr>
                     <tr class="font-weight-bold bg-light">
                         <th>Grand Total:</th>
-                        <td class="text-dark">${{ number_format($invoice->total, 2) }}</td>
+                        <td class="text-dark">
+                            @if($invoice->payment_currency == 2)
+                                <small class="font-weight-normal text-muted">USD</small>
+                            @endif
+                            ${{ number_format($invoice->total, 2) }}
+                        </td>
                     </tr>
+                    @if($invoice->payment_currency == 2)
+                    <tr style="background:#fff8e1;">
+                        <td colspan="2" style="font-size:12px; color:#856404; padding:6px 8px;">
+                            <strong>&#9432; ZWL Payment:</strong> Amounts are in <strong>USD</strong>. Payable in <strong>ZIG</strong> at the interbank rate on the date of payment.
+                        </td>
+                    </tr>
+                    @endif
                     @if($verified_paid > 0)
                     <tr class="text-success font-weight-bold">
                         <th>Verified Paid:</th>
@@ -232,6 +249,32 @@
             <div class="card-body p-3">
                 <div class="row">
                     <div class="col-md-7">
+                        @if($invoice->payment_currency == 2)
+                        {{-- ZWL / ZIG account --}}
+                        <table class="table table-bordered table-sm mb-0">
+                            <tr>
+                                <th class="bg-light" style="width:35%;">Account Name:</th>
+                                <td class="font-weight-bold">Sports and Recreation</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Bank:</th>
+                                <td class="font-weight-bold">EmpowerBank</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Account Number:</th>
+                                <td class="font-weight-bold text-success" style="letter-spacing:1px;">900262824149</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Account Type:</th>
+                                <td>ZWL / ZIG Account</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Currency:</th>
+                                <td class="font-weight-bold">ZWL (ZIG)</td>
+                            </tr>
+                        </table>
+                        @else
+                        {{-- USD account (default) --}}
                         <table class="table table-bordered table-sm mb-0">
                             <tr>
                                 <th class="bg-light" style="width:35%;">Account Name:</th>
@@ -254,8 +297,14 @@
                                 <td class="font-weight-bold">USD</td>
                             </tr>
                         </table>
+                        @endif
                     </div>
                     <div class="col-md-5 mt-3 mt-md-0">
+                        @if($invoice->payment_currency == 2)
+                        <div class="alert alert-warning py-2 px-3 mb-2" style="font-size:13px;">
+                            <strong>&#9432; ZWL Payment Note:</strong> Unit prices on this invoice are quoted in <strong>USD</strong>. Payment is to be made in <strong>ZIG</strong> at the prevailing <strong>interbank rate</strong> on the date of payment.
+                        </div>
+                        @endif
                         <p class="small text-muted mb-0">
                             After payment, upload your proof via the Exhibitor Portal or email
                             <strong>{{ $ministrySettings['app_email'] ?? 'mosrac@kuzana.org.zw' }}</strong> (CC: <strong>{{ $ministrySettings['app_email_cc'] ?? 'secretariat@kuzana.org.zw' }}</strong>).

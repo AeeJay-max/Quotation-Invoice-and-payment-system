@@ -60,12 +60,16 @@ class CustomerPortalController extends Controller
         $approvedQuotations = Quotation::where('client_id', $clientId)->where('status', 'approved')->count();
         $confirmedBookings  = Booking::where('client_id', $clientId)->whereIn('status', ['confirmed', 'accepted'])->count();
 
-        // Invoices for this exhibitor
-        $invoices = Invoice::where(function ($q) use ($clientId, $user) {
+        // Invoices for this exhibitor — includes admin-created invoices linked via client_id or booking_id
+        $bookingIds = $bookings->pluck('id');
+        $invoices = Invoice::where(function ($q) use ($clientId, $user, $bookingIds) {
             if ($clientId) {
                 $q->where('client_id', $clientId);
             }
             $q->orWhere('user_id', $user->id);
+            if ($bookingIds->isNotEmpty()) {
+                $q->orWhereIn('booking_id', $bookingIds);
+            }
         })->get();
         $invoiceIds    = $invoices->pluck('id');
         $totalInvoiced = $invoices->sum('total');
