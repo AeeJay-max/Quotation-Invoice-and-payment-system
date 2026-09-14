@@ -16,7 +16,7 @@
                     <div class="row">
                         <div class="col-lg-3">
                             <div class="form-group">
-                                <label for="client">Select Client</label>
+                                <label for="client">Select Client(s)</label>
                                 <div class="row">
                                     <div class="col-lg-2">
                                         <div class="input-group-append" data-target="#client"
@@ -26,8 +26,7 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-10">
-                                        <select id="client" name="client_id" class="form-control client_id select2 w-100">
-                                            <option value="">Select Client</option>
+                                        <select id="client" name="client_id[]" class="form-control client_id select2 w-100" multiple="multiple" data-placeholder="Select Client(s)">
                                             @foreach($clients as $client)
                                                 <option
                                                     @if(isset($invoice) && $invoice->client_id == $client->id) selected @endif
@@ -305,7 +304,14 @@
                 data: formData,
                 success: function (response) {
                     $('.loading-container').hide();
-window.location.href = response.redirect;
+                    if (response.pdf_urls && response.pdf_urls.length > 0) {
+                        response.pdf_urls.forEach(function (url) {
+                            window.open(url, '_blank');
+                        });
+                    }
+                    if (response.redirect) {
+                        window.location.href = response.redirect;
+                    }
                 },
                 error: function (xhr) {
                     $('.loading-container').hide();

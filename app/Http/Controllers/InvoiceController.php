@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class InvoiceController extends Controller
@@ -156,43 +157,72 @@ class InvoiceController extends Controller
             'unit_price.*.required'=>'Unit price required',
             'quantity.*.required'=>'Quantity required']);
 
-        $invoice = Invoice::create([
-            'client_id' => $request->client_id,
-            'event_id' => $request->event_id,
-            'user_id' => Auth::id(),
-            'create_date' => $request->create_date,
-            'due_date' => $request->due_date,
-            'note' => $request->note,
-            'payment_type' => $request->payment_type,
-            'payment_status' => $request->payment_status,
-            'payment_currency' => $request->payment_currency,
-            'discount' => $request->discount ?? 0,
-            'terms_condition' => $request->terms_conditions,
-            'vat' => $request->vat ?? 0
-        ]);
-
-        $subtotal = 0;
-        foreach ($request->quantity as $key => $value) {
-            InvoiceItem::create([
-                'invoice_id' => $invoice->id,
-                'quantity'   => $request->quantity[$key],
-                'description'=> $request->description[$key],
-                'unit_price' => $request->unit_price[$key],
-            ]);
-            $subtotal += $request->quantity[$key] * $request->unit_price[$key];
+        $clientIds = is_array($request->client_id) ? array_filter($request->client_id) : [$request->client_id];
+        if (empty($clientIds)) {
+            return response()->json(['errors' => ['client_id' => ['Please select at least one client.']]], 422);
         }
 
-        $vatAmount   = $subtotal * (($invoice->vat ?? 0) / 100);
-        $discount    = floatval($invoice->discount ?? 0);
-        $grandTotal  = $subtotal + $vatAmount - $discount;
-        $invoice->update([
-            'total'              => $grandTotal,
-            'amount_paid'        => 0,
-            'amount_outstanding' => $grandTotal,
+        $createdInvoices = [];
+        $pdfUrls = [];
+
+        DB::transaction(function () use ($request, $clientIds, &$createdInvoices, &$pdfUrls) {
+            foreach ($clientIds as $clientId) {
+                $invoice = Invoice::create([
+                    'client_id' => $clientId,
+                    'event_id' => $request->event_id,
+                    'user_id' => Auth::id(),
+                    'create_date' => $request->create_date,
+                    'due_date' => $request->due_date,
+                    'note' => $request->note,
+                    'payment_type' => $request->payment_type,
+                    'payment_status' => $request->payment_status,
+                    'payment_currency' => $request->payment_currency,
+                    'discount' => $request->discount ?? 0,
+                    'terms_condition' => $request->terms_conditions,
+                    'vat' => $request->vat ?? 0
+                ]);
+
+                $subtotal = 0;
+                if ($request->has('quantity') && is_array($request->quantity)) {
+                    foreach ($request->quantity as $key => $value) {
+                        InvoiceItem::create([
+                            'invoice_id' => $invoice->id,
+                            'quantity'   => $request->quantity[$key],
+                            'description'=> $request->description[$key],
+                            'unit_price' => $request->unit_price[$key],
+                        ]);
+                        $subtotal += $request->quantity[$key] * $request->unit_price[$key];
+                    }
+                }
+
+                $vatAmount   = $subtotal * (($invoice->vat ?? 0) / 100);
+                $discount    = floatval($invoice->discount ?? 0);
+                $grandTotal  = $subtotal + $vatAmount - $discount;
+                $invoice->update([
+                    'total'              => $grandTotal,
+                    'amount_paid'        => 0,
+                    'amount_outstanding' => $grandTotal,
+                ]);
+
+                $this->storeInvoice($invoice);
+
+                $createdInvoices[] = $invoice;
+                $pdfUrls[] = url('/invoice/print/' . $invoice->id);
+            }
+        });
+
+        if (count($createdInvoices) === 1) {
+            return response()->json([
+                'redirect' => route('invoice.view', ['id' => $createdInvoices[0]->id]),
+                'pdf_urls' => $pdfUrls
+            ]);
+        }
+
+        return response()->json([
+            'redirect' => url('/invoice'),
+            'pdf_urls' => $pdfUrls,
+            'count'    => count($createdInvoices)
         ]);
-
-        return response()->json(['redirect'=>route('invoice.view', ['id'=>$invoice->id])]);
-
     }
 
     //edit invoice
