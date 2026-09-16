@@ -32,32 +32,24 @@ class CustomerMiddleware
             return redirect('/login')->with('error', 'Access denied. Exhibitor portal only.');
         }
 
-        // For clients registered via admin dashboard: enforce password change and email verification
+        // For clients registered via admin dashboard: enforce email verification link first, then password update
         if ($user->created_by_admin) {
-            // Step 1: Force password change if default password is still active
-            if ($user->must_change_password) {
-                if (!$request->is('customer/must-change-password*') && !$request->is('logout')) {
-                    return redirect()->route('customer.must-change-password')
-                        ->with('warning', 'Your account was registered by an administrator with a default password. You must change your password to continue.');
+            // Step 1: Force email verification first via email link
+            if (is_null($user->email_verified_at)) {
+                if (!$request->is('customer/verify-email*') && !$request->is('customer/verify/*') && !$request->is('logout')) {
+                    return redirect()->route('customer.verify-email')
+                        ->with('warning', 'Your account was created by an administrator. A verification email link was sent to your email. You must verify your email address before setting your password.');
                 }
             } else {
-                // If they are on must-change-password page but already changed it, redirect onward
-                if ($request->is('customer/must-change-password*')) {
-                    if (is_null($user->email_verified_at)) {
-                        return redirect()->route('customer.verify-email');
-                    }
-                    return redirect()->route('customer.dashboard');
-                }
-
-                // Step 2: Force email verification if not yet verified
-                if (is_null($user->email_verified_at)) {
-                    if (!$request->is('customer/verify-email*') && !$request->is('customer/verify/*') && !$request->is('logout')) {
-                        return redirect()->route('customer.verify-email')
-                            ->with('warning', 'Please verify your email address to complete your account activation.');
+                // Email is verified. Now Step 2: Force password change if default password is still active
+                if ($user->must_change_password) {
+                    if (!$request->is('customer/must-change-password*') && !$request->is('logout')) {
+                        return redirect()->route('customer.must-change-password')
+                            ->with('warning', 'Email verified successfully! Please change your default password to activate your account.');
                     }
                 } else {
-                    // If they are on verify-email page but already verified, redirect to dashboard
-                    if ($request->is('customer/verify-email*')) {
+                    // If both email is verified & password updated, prevent lingering on onboarding screens
+                    if ($request->is('customer/verify-email*') || $request->is('customer/must-change-password*')) {
                         return redirect()->route('customer.dashboard');
                     }
                 }

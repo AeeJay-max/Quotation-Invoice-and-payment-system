@@ -353,7 +353,7 @@ class EventBookingWizardController extends Controller
                     'vat' => $quotation->vat,
                     'payment_type' => 1,
                     'payment_currency' => 1,
-                    'payment_status' => 1, // Unpaid / Pending in existing lookup
+                    'payment_status' => 2, // 2 = Unpaid
                     'total' => $quotation->total,
                     'amount_paid' => 0,
                     'amount_outstanding' => $quotation->total,

@@ -68,12 +68,21 @@
 
             {{-- ══ PAYMENT STAMP ══ --}}
             @php
+                $stampVerifiedPaid = $verified_paid ?? 0;
+                $stampOutstanding  = $outstanding_balance ?? floatval($invoice->total ?? 0);
                 $isCancelled = $invoice->payment_status == 3;
+
                 if ($isCancelled) {
                     $stamp = 'cancelled';
-                } elseif ($verified_paid <= 0) {
+                } elseif ($invoice->payment_status == 1) { // Admin manually marked Paid
+                    $stamp = 'paid';
+                    $stampVerifiedPaid = $invoice->total;
+                    $stampOutstanding = 0;
+                } elseif ($invoice->payment_status == 4 && $stampVerifiedPaid <= 0) {
+                    $stamp = 'partially_paid';
+                } elseif ($stampVerifiedPaid <= 0) {
                     $stamp = 'unpaid';
-                } elseif ($outstanding_balance > 0) {
+                } elseif ($stampOutstanding > 0) {
                     $stamp = 'partially_paid';
                 } else {
                     $stamp = 'paid';
@@ -179,14 +188,14 @@
                         </td>
                     </tr>
                     @endif
-                    @if($verified_paid > 0)
+                    @if($stampVerifiedPaid > 0)
                     <tr class="text-success font-weight-bold">
                         <th>Verified Paid:</th>
-                        <td>${{ number_format($verified_paid, 2) }}</td>
+                        <td>${{ number_format($stampVerifiedPaid, 2) }}</td>
                     </tr>
-                    <tr class="{{ $outstanding_balance > 0 ? 'text-danger' : 'text-success' }} font-weight-bold">
+                    <tr class="{{ $stampOutstanding > 0 ? 'text-danger' : 'text-success' }} font-weight-bold">
                         <th>Outstanding Balance:</th>
-                        <td>${{ number_format($outstanding_balance, 2) }}</td>
+                        <td>${{ number_format($stampOutstanding, 2) }}</td>
                     </tr>
                     @else
                     <tr class="text-danger font-weight-bold">
@@ -316,15 +325,43 @@
         </div>
 
         {{-- ══ ACTIONS ══ --}}
-        <div class="d-flex justify-content-between border-top pt-3 no-print">
+        <div class="d-flex justify-content-between flex-wrap gap-2 border-top pt-3 no-print">
             <a href="{{ route('customer.invoices.index') }}" class="btn btn-outline-secondary font-weight-bold">
                 <i class="fas fa-arrow-left mr-1"></i> Back to Invoices
             </a>
-            @if($stamp !== 'paid' && $stamp !== 'cancelled')
-            <a href="{{ route('customer.payments.index') }}" class="btn btn-success font-weight-bold shadow">
-                <i class="fas fa-credit-card mr-1"></i> Upload Payment Proof
-            </a>
-            @endif
+
+            <div class="d-flex flex-wrap gap-2">
+                @if(!$invoice->is_confirmed && $stamp !== 'paid' && $stamp !== 'cancelled')
+                    {{-- CONFIRM BOOKING BUTTON --}}
+                    <form method="POST" action="{{ route('customer.invoices.confirm', $invoice->id) }}" onsubmit="return confirm('Are you sure you want to confirm this booking? This action cannot be undone.')">
+                        @csrf
+                        <button type="submit" class="btn btn-warning font-weight-bold shadow">
+                            <i class="fas fa-check-circle mr-1"></i> Confirm Booking
+                        </button>
+                    </form>
+                @elseif($invoice->is_confirmed)
+                    <span class="badge badge-success p-2" style="font-size:13px; align-self:center;">
+                        <i class="fas fa-check-circle mr-1"></i> Booking Confirmed
+                        @if($invoice->confirmed_at)
+                            <small class="font-weight-normal">({{ optional($invoice->confirmed_at)->format('d M Y') }})</small>
+                        @endif
+                    </span>
+                @endif
+
+                @if($stamp !== 'paid' && $stamp !== 'cancelled')
+                    @if($invoice->is_confirmed)
+                        <a href="{{ route('customer.payments.index') }}" class="btn btn-success font-weight-bold shadow">
+                            <i class="fas fa-credit-card mr-1"></i> Upload Payment Proof
+                        </a>
+                    @else
+                        <button class="btn btn-success font-weight-bold shadow" disabled
+                                title="You must confirm your booking before uploading payment proof">
+                            <i class="fas fa-credit-card mr-1"></i> Upload Payment Proof
+                            <small class="d-block font-weight-normal" style="font-size:10px;">(Confirm booking first)</small>
+                        </button>
+                    @endif
+                @endif
+            </div>
         </div>
 
     </div>

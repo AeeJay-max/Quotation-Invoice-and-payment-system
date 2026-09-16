@@ -20,6 +20,7 @@
                             <th>Paid</th>
                             <th>Outstanding</th>
                             <th>Status</th>
+                            <th>Booking</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -32,19 +33,42 @@
                                 <td class="font-weight-bold text-success">${{ number_format($inv->amount_paid, 2) }}</td>
                                 <td class="font-weight-bold text-danger">${{ number_format($inv->amount_outstanding, 2) }}</td>
                                 <td>
-                                    <span class="badge badge-{{ $inv->amount_outstanding <= 0 ? 'success' : 'warning' }}">
-                                        {{ $inv->amount_outstanding <= 0 ? 'PAID' : 'PARTIALLY / UNPAID' }}
-                                    </span>
+                                    @if ($inv->payment_status == 3)
+                                        <span class="badge badge-secondary">CANCELLED</span>
+                                    @elseif ($inv->payment_status == 1 || $inv->amount_outstanding <= 0)
+                                        <span class="badge badge-success">PAID</span>
+                                    @elseif ($inv->payment_status == 4 || ($inv->amount_paid > 0 && $inv->amount_outstanding > 0))
+                                        <span class="badge badge-warning">PARTIALLY PAID</span>
+                                    @else
+                                        <span class="badge badge-danger">UNPAID</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($inv->is_confirmed)
+                                        <span class="badge badge-success">
+                                            <i class="fas fa-check-circle mr-1"></i> Confirmed
+                                        </span>
+                                    @else
+                                        <span class="badge badge-secondary">Pending Confirmation</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <a href="{{ route('customer.invoices.show', $inv->id) }}" class="btn btn-sm btn-info font-weight-bold">
-                                        <i class="fas fa-eye mr-1"></i> View Invoice
+                                        <i class="fas fa-eye mr-1"></i> View
                                     </a>
+                                    @if(!$inv->is_confirmed && $inv->amount_outstanding > 0)
+                                        <form method="POST" action="{{ route('customer.invoices.confirm', $inv->id) }}" class="d-inline" onsubmit="return confirm('Confirm this booking?')">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-warning font-weight-bold">
+                                                <i class="fas fa-check mr-1"></i> Confirm
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">No invoices issued yet.</td>
+                                <td colspan="8" class="text-center py-4 text-muted">No invoices issued yet.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -57,4 +81,5 @@
     </div>
 </div>
 @endsection
+
 

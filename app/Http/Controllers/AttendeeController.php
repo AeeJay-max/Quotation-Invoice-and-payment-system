@@ -6,6 +6,7 @@ use App\Models\Attendee;
 use App\Models\AttendeeType;
 use App\Models\Booking;
 use App\Models\BookingStatusHistory;
+use App\Models\Invoice;
 use App\Services\BadgeGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +54,14 @@ class AttendeeController extends Controller
         ]);
 
         $booking = Booking::findOrFail($validated['booking_id']);
+
+        // Require booking confirmation before adding badge applicants
+        $hasConfirmedInvoice = Invoice::where('booking_id', $booking->id)
+            ->where('is_confirmed', true)->exists();
+        if (!$hasConfirmedInvoice) {
+            return back()->with('error', 'You must confirm your booking via the invoice page before adding attendees for badge applications.');
+        }
+
         $validated['company'] = $booking->client->company_name ?? '';
         $validated['status'] = 'draft';
 
@@ -97,6 +106,13 @@ class AttendeeController extends Controller
     public function submitList(Request $request, $bookingId)
     {
         $booking = Booking::with('attendees')->findOrFail($bookingId);
+
+        // Require booking confirmation before submitting attendee list
+        $hasConfirmedInvoice = Invoice::where('booking_id', $booking->id)
+            ->where('is_confirmed', true)->exists();
+        if (!$hasConfirmedInvoice) {
+            return back()->with('error', 'You must confirm your booking via the invoice page before submitting your attendee list.');
+        }
 
         if ($booking->attendees->isEmpty()) {
             return back()->with('error', 'Please add at least one attendee before submitting.');

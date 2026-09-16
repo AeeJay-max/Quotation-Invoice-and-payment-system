@@ -198,10 +198,19 @@ class InvoiceController extends Controller
                 $vatAmount   = $subtotal * (($invoice->vat ?? 0) / 100);
                 $discount    = floatval($invoice->discount ?? 0);
                 $grandTotal  = $subtotal + $vatAmount - $discount;
+
+                $amountPaid = 0;
+                $outstanding = $grandTotal;
+
+                if ($invoice->payment_status == 1) { // Paid
+                    $amountPaid = $grandTotal;
+                    $outstanding = 0;
+                }
+
                 $invoice->update([
                     'total'              => $grandTotal,
-                    'amount_paid'        => 0,
-                    'amount_outstanding' => $grandTotal,
+                    'amount_paid'        => $amountPaid,
+                    'amount_outstanding' => $outstanding,
                 ]);
 
                 $this->storeInvoice($invoice);
@@ -307,9 +316,21 @@ class InvoiceController extends Controller
         $discount    = floatval($invoice->discount ?? 0);
         $grandTotal  = $subtotal + $vatAmount - $discount;
         $amountPaid  = floatval($invoice->amount_paid ?? 0);
+        $outstanding = max(0, $grandTotal - $amountPaid);
+
+        // If admin manually marked as Paid (status 1)
+        if ($invoice->payment_status == 1) {
+            $amountPaid = $grandTotal;
+            $outstanding = 0;
+        } elseif ($invoice->payment_status == 2) { // Unpaid
+            $amountPaid = 0;
+            $outstanding = $grandTotal;
+        }
+
         $invoice->update([
             'total'              => $grandTotal,
-            'amount_outstanding' => max(0, $grandTotal - $amountPaid),
+            'amount_paid'        => $amountPaid,
+            'amount_outstanding' => $outstanding,
         ]);
 
         return response()->json(['redirect'=>route('invoice.view', ['id'=>$invoice->id])]);

@@ -76,6 +76,11 @@ class PaymentController extends Controller
             ->where('client_id', $clientId)
             ->firstOrFail();
 
+        // REQUIREMENT: Must confirm booking before uploading proof of payment
+        if (!$invoice->is_confirmed) {
+            return redirect()->back()->with('error', 'You cannot upload proof of payment without confirming your booking first. Please click "Confirm Booking" on your invoice.');
+        }
+
         $quotation = $invoice->quotation
             ?? \App\Models\Quotation::where('quotation_number', $validated['quotation_number'])
                 ->where('client_id', $clientId)
@@ -239,7 +244,7 @@ class PaymentController extends Controller
 
                 $invoiceTotal      = floatval($invoice->total ?? 0);
                 $newOutstanding    = max(0, $invoiceTotal - $totalVerified);
-                $paymentStatus     = $newOutstanding <= 0 ? 2 : 3; // 2=Paid, 3=Partially Paid
+                $paymentStatus     = $newOutstanding <= 0 ? 1 : 4; // 1=Paid, 4=Partially Paid
 
                 // 3. Update invoice with recalculated values
                 $invoice->update([

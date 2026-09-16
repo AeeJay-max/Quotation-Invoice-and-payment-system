@@ -36,7 +36,9 @@ class Invoice extends Model
         'vat',
         'total',
         'amount_paid',
-        'amount_outstanding'
+        'amount_outstanding',
+        'is_confirmed',
+        'confirmed_at'
     ];
 
     public function event()

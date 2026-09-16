@@ -209,6 +209,7 @@ Route::group([], function () {
             Route::get('quotations', [\App\Http\Controllers\CustomerPortalController::class, 'quotations'])->name('quotations.index');
             Route::get('invoices', [\App\Http\Controllers\CustomerPortalController::class, 'invoices'])->name('invoices.index');
             Route::get('invoices/{id}', [\App\Http\Controllers\CustomerPortalController::class, 'showInvoice'])->name('invoices.show');
+            Route::post('invoices/{id}/confirm', [\App\Http\Controllers\CustomerPortalController::class, 'confirmInvoice'])->name('invoices.confirm');
             Route::get('payments', [\App\Http\Controllers\PaymentController::class, 'customerPayments'])->name('payments.index');
             Route::post('payments/submit', [\App\Http\Controllers\PaymentController::class, 'submitPayment'])->name('payments.submit');
             Route::get('payments/{id}/proof', [\App\Http\Controllers\PaymentController::class, 'customerServeProof'])->name('payments.proof');

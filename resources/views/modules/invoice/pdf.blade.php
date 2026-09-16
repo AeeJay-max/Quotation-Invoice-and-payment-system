@@ -316,6 +316,10 @@
 
             if ($isCancelled) {
                 $pdfStamp = 'cancelled';
+            } elseif ($invoice->payment_status == 1) { // Manually marked as Paid
+                $pdfStamp = 'paid';
+                $pdfVerifiedPaid = $pdfGrandTotal;
+                $pdfOutstanding = 0;
             } elseif ($pdfVerifiedPaid <= 0) {
                 $pdfStamp = 'unpaid';
             } elseif ($pdfOutstanding > 0) {

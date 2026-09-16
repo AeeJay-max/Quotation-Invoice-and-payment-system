@@ -469,6 +469,12 @@
 
                                         if ($isCancelled) {
                                             $stampKey = 'cancelled';
+                                        } elseif ($invoice->payment_status == 1) { // Admin manually marked Paid
+                                            $stampKey = 'paid';
+                                            $stampVerifiedPaid = $invoiceGrandTotal;
+                                            $stampOutstanding = 0;
+                                        } elseif ($invoice->payment_status == 4 && $stampVerifiedPaid <= 0) { // Partially Paid set manually
+                                            $stampKey = 'partially_paid';
                                         } elseif ($stampVerifiedPaid <= 0) {
                                             $stampKey = 'unpaid';
                                         } elseif ($stampOutstanding > 0) {

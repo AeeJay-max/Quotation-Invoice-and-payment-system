@@ -36,6 +36,27 @@ class AuthController extends Controller
             return redirect()->intended('dashboard');
         }
 
+        // For admin-created clients on first login: auto-send verification email
+        // so they must verify before setting their password
+        if ($user->created_by_admin && is_null($user->email_verified_at)) {
+            $verificationUrl = route('customer.verify-email.verify', [
+                'id'   => $user->id,
+                'hash' => sha1($user->email),
+            ]);
+            try {
+                \Illuminate\Support\Facades\Mail::raw(
+                    "Hello {$user->name},\n\nWelcome to the MOSRAC Exhibitor Portal!\n\nYour account was created by an administrator. Please verify your email address and set your password by clicking the link below:\n\n{$verificationUrl}\n\nThis link will log you in and prompt you to set a secure password.\n\nThank you,\nMinistry of Sport, Recreation, Arts and Culture",
+                    function ($message) use ($user) {
+                        $message->to($user->email)->subject('Verify Your Account & Set Password - MOSRAC Exhibitor Portal');
+                    }
+                );
+            } catch (\Exception $e) {
+                // Silently fail if email not configured
+            }
+            return redirect('customer/verify-email')
+                ->with('info', "A verification email has been sent to {$user->email}. Please click the link in your inbox to verify your account and set your new password.");
+        }
+
         return redirect()->intended('customer/dashboard');
     }
 

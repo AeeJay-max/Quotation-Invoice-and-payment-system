@@ -12,10 +12,17 @@
                     <div class="card-header bg-primary text-white text-center py-4">
                         <i class="fas fa-envelope-open-text fa-3x mb-2"></i>
                         <h4 class="font-weight-bold mb-0">Verify Your Email Address</h4>
-                        <p class="small text-white-50 mb-0">Account Activation Step 2 of 2</p>
+                        <p class="small text-white-50 mb-0">Account Activation — Step 1 of 2</p>
                     </div>
 
                     <div class="card-body p-4 text-center">
+                        @if(session('info'))
+                            <div class="alert alert-info alert-dismissible fade show text-left" role="alert">
+                                <i class="fas fa-info-circle mr-2"></i> {{ session('info') }}
+                                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                            </div>
+                        @endif
+
                         @if(session('success'))
                             <div class="alert alert-success alert-dismissible fade show text-left" role="alert">
                                 <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
@@ -41,7 +48,7 @@
                             Welcome, {{ $user->name }}!
                         </p>
                         <p class="text-muted mb-4">
-                            We have sent a verification link to your registered email address:<br>
+                            A verification link has been sent to your registered email address:<br>
                             <span class="badge badge-info p-2 font-weight-bold" style="font-size: 1rem;">{{ $user->email }}</span>
                         </p>
 
@@ -49,8 +56,8 @@
                             <h6 class="font-weight-bold text-secondary mb-2"><i class="fas fa-info-circle text-info mr-1"></i> What happens next?</h6>
                             <ul class="text-muted small mb-0 pl-3">
                                 <li>Check your inbox for the verification email.</li>
-                                <li>Click the link in the email to verify your ownership.</li>
-                                <li>Once verified, your account will instantly unlock all Exhibitor features, invoices, stand applications, and badge management.</li>
+                                <li>Click the link in the email — it will verify your account and prompt you to <strong>set your new password</strong>.</li>
+                                <li>Once your password is set, you will have full access to all Exhibitor Portal features.</li>
                             </ul>
                         </div>
 
