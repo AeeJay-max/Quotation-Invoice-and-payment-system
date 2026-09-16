@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="font-weight-bold text-dark mb-1">Venues & Exhibition Halls</h2>
-            <p class="text-muted mb-0">Manage physical convention centers, halls, dimensions ($m^2$), and rental rates ($/m^2$).</p>
+            <p class="text-muted mb-0">Manage physical convention centers, halls, dimensions (m²), and rental rates ($/m²).</p>
         </div>
         <button type="button" class="btn btn-primary shadow-sm" data-toggle="modal" data-target="#createVenueModal">
             <i class="fas fa-plus mr-1"></i> Register New Venue
@@ -60,9 +60,9 @@
                                 <thead class="bg-light">
                                     <tr>
                                         <th>Hall / Room Name</th>
-                                        <th class="text-center">Area ($m^2$) Total / Available</th>
+                                        <th class="text-center">Area (m²) Total / Available</th>
                                         <th class="text-center">Tickets Quota & Prices</th>
-                                        <th class="text-right">Price / $m^2$</th>
+                                        <th class="text-right">Price / m²</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -107,10 +107,17 @@
                             </table>
                         </div>
                     </div>
-                    <div class="card-footer bg-white border-top">
+                    <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center">
                         <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#addHallModal{{ $venue->id }}">
-                            <i class="fas fa-plus-circle mr-1"></i> Add Hall / Room, Area ($m^2$), Tickets & Pricing
+                            <i class="fas fa-plus-circle mr-1"></i> Add Hall / Room, Area (m²), Tickets & Pricing
                         </button>
+                        <form action="{{ route('admin.venues.destroy', $venue->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this venue? This action cannot be undone.');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -156,12 +163,12 @@
                         </div>
                         <div class="form-row bg-light p-3 rounded mb-3 border">
                             <div class="form-group col-md-6 mb-0">
-                                <label class="font-weight-bold text-dark"><i class="fas fa-ruler-combined text-info mr-1"></i> Total Area in Square Meters ($m^2$) *</label>
+                                <label class="font-weight-bold text-dark"><i class="fas fa-ruler-combined text-info mr-1"></i> Total Area in Square Meters (m²) *</label>
                                 <input type="number" step="0.01" name="total_area_sqm" class="form-control" placeholder="e.g. 2500.00" required>
                                 <small class="text-muted">Total available floor space for stands.</small>
                             </div>
                             <div class="form-group col-md-6 mb-0">
-                                <label class="font-weight-bold text-dark"><i class="fas fa-tag text-success mr-1"></i> Space Price Per Square Meter ($\$/m^2$) *</label>
+                                <label class="font-weight-bold text-dark"><i class="fas fa-tag text-success mr-1"></i> Space Price Per Square Meter ($/m²) *</label>
                                 <input type="number" step="0.01" name="price_per_sqm" class="form-control" placeholder="e.g. 15.00" required>
                                 <small class="text-muted">Rental rate charged per square meter.</small>
                             </div>

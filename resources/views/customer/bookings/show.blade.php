@@ -22,7 +22,14 @@
                     <div class="row">
                         <div class="col-md-6 mb-2"><strong>Hall / Space:</strong> {{ optional($booking->space)->name }}</div>
                         <div class="col-md-6 mb-2"><strong>Stand Type:</strong> {{ optional($booking->standType)->name }}</div>
-                        <div class="col-md-6 mb-2"><strong>Dimensions:</strong> {{ $booking->width }}m × {{ $booking->length }}m ({{ $booking->area_sqm }}m²)</div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Dimensions:</strong> 
+                            @if($booking->area_sqm > 0)
+                                {{ $booking->width }}m × {{ $booking->length }}m ({{ $booking->area_sqm }}m²)
+                            @else
+                                {{ $booking->invoice && $booking->invoice->items->first() ? $booking->invoice->items->first()->description : ($booking->invoice->note ?? 'N/A') }}
+                            @endif
+                        </div>
                         <div class="col-md-6 mb-2"><strong>Position:</strong> {{ optional($booking->position)->position_number ?? 'Standard' }}</div>
                     </div>
                 </div>

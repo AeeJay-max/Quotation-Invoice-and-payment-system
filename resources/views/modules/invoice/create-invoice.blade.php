@@ -90,6 +90,43 @@
                                 <span class="invalid-feedback due_date"></span>
                             </div>
                         </div>
+
+                        <!-- Optional Space Allocation -->
+                        <div class="col-lg-12">
+                            <hr>
+                            <h5 class="text-info"><i class="fas fa-cube mr-1"></i> Space Allocation (Optional)</h5>
+                            <p class="text-muted small mb-3">If you allocate space here, the system will automatically create a booking for the client.</p>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label for="event_space_id">Hall / Space</label>
+                                <select name="event_space_id" id="event_space_id" class="form-control select2 event_space_id" style="width: 100%;">
+                                    <option value="" disabled selected>-- Select Hall --</option>
+                                    @foreach($event_spaces as $space)
+                                        <option value="{{$space->id}}">{{$space->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label for="width">Width (m)</label>
+                                <input type="number" step="0.01" name="width" id="width" class="form-control" placeholder="e.g. 3">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label for="length">Length (m)</label>
+                                <input type="number" step="0.01" name="length" id="length" class="form-control" placeholder="e.g. 3">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label for="area_sqm">Total Area (m²)</label>
+                                <input type="number" step="0.01" name="area_sqm" id="area_sqm" class="form-control" placeholder="e.g. 9">
+                            </div>
+                        </div>
+                        <div class="col-lg-12"><hr></div>
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label for="note">Note</label>

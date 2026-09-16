@@ -28,8 +28,20 @@
                             <tr>
                                 <td><strong class="text-primary">{{ $b->booking_number }}</strong></td>
                                 <td>{{ $b->event->name ?? 'N/A' }}</td>
-                                <td>{{ optional($b->space)->name }} ({{ optional($b->standType)->name }})</td>
-                                <td>{{ $b->width }}m × {{ $b->length }}m ({{ $b->area_sqm }}m²)</td>
+                                <td>
+                                    @if($b->space)
+                                        {{ $b->space->name }} ({{ optional($b->standType)->name }})
+                                    @else
+                                        <span class="text-muted">Not Allocated</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($b->area_sqm > 0)
+                                        {{ $b->width }}m × {{ $b->length }}m ({{ $b->area_sqm }}m²)
+                                    @else
+                                        {{ $b->invoice && $b->invoice->items->first() ? $b->invoice->items->first()->description : ($b->invoice->note ?? 'N/A') }}
+                                    @endif
+                                </td>
                                 <td class="font-weight-bold text-success">${{ number_format($b->grand_total, 2) }}</td>
                                 <td><span class="badge badge-success">{{ strtoupper($b->status) }}</span></td>
                                 <td>

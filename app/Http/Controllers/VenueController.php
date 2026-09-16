@@ -68,4 +68,21 @@ class VenueController extends Controller
 
         return back()->with('success', 'Venue hall/room added successfully with square meters, ticket quotas, and pricing.');
     }
+
+    public function destroy($id)
+    {
+        $venue = Venue::findOrFail($id);
+        
+        // Prevent deletion if there are associated events
+        if ($venue->events()->count() > 0) {
+            return back()->with('error', 'Cannot delete venue because it is associated with existing events.');
+        }
+
+        // Delete associated halls first
+        $venue->halls()->delete();
+        
+        $venue->delete();
+
+        return back()->with('success', 'Venue deleted successfully.');
+    }
 }

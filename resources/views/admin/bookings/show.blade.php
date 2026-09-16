@@ -70,8 +70,16 @@
                         <div class="col-md-6">
                             <p class="mb-1"><strong>Hall / Space:</strong> {{ optional($booking->space)->name }}</p>
                             <p class="mb-1"><strong>Stand Type:</strong> {{ optional($booking->standType)->name }}</p>
-                            <p class="mb-1"><strong>Dimensions:</strong> {{ $booking->width }}m × {{ $booking->length }}m</p>
-                            <p class="mb-1"><strong>Total Area:</strong> {{ $booking->area_sqm }} m²</p>
+                            <p class="mb-1">
+                                <strong>Dimensions:</strong> 
+                                @if($booking->area_sqm > 0)
+                                    {{ $booking->width }}m × {{ $booking->length }}m
+                                @else
+                                    {{ $booking->invoice->items->first()->description ?? $booking->invoice->note ?? 'N/A' }}
+                                @endif
+                                <a href="#" data-toggle="modal" data-target="#editDimensionsModal" class="ml-2 btn btn-xs btn-outline-primary"><i class="fas fa-edit"></i> Edit</a>
+                            </p>
+                            <p class="mb-1"><strong>Total Area:</strong> {{ $booking->area_sqm > 0 ? $booking->area_sqm . ' m²' : 'N/A' }}</p>
                         </div>
                         <div class="col-md-6">
                             <p class="mb-1"><strong>Position / Booth #:</strong> {{ optional($booking->position)->position_number ?? 'Standard' }}</p>
@@ -210,6 +218,42 @@
             </div>
 
         </div>
+    </div>
+</div>
+
+<!-- Edit Dimensions Modal -->
+<div class="modal fade" id="editDimensionsModal" tabindex="-1" role="dialog" aria-labelledby="editDimensionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form action="{{ route('admin.bookings.dimensions', $booking->id) }}" method="POST">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-ruler-combined mr-2"></i>Edit Booking Dimensions</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="font-weight-bold">Width (m)</label>
+                        <input type="number" step="0.01" name="width" class="form-control" value="{{ $booking->width }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Length (m)</label>
+                        <input type="number" step="0.01" name="length" class="form-control" value="{{ $booking->length }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Total Area (m²) *</label>
+                        <input type="number" step="0.01" name="area_sqm" class="form-control" value="{{ $booking->area_sqm }}" required>
+                        <small class="text-muted">Set to 0 if you want to fall back to the invoice description.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary shadow-sm" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary shadow-sm"><i class="fas fa-save mr-1"></i> Save Dimensions</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

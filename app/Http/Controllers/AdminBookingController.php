@@ -63,6 +63,25 @@ class AdminBookingController extends Controller
         return view('admin.bookings.show', compact('booking'));
     }
 
+    public function updateDimensions(Request $request, $id)
+    {
+        $booking = Booking::findOrFail($id);
+        
+        $request->validate([
+            'width' => 'nullable|numeric|min:0',
+            'length' => 'nullable|numeric|min:0',
+            'area_sqm' => 'required|numeric|min:0',
+        ]);
+        
+        $booking->update([
+            'width' => $request->width ?? 0,
+            'length' => $request->length ?? 0,
+            'area_sqm' => $request->area_sqm,
+        ]);
+
+        return back()->with('success', 'Booking dimensions updated successfully.');
+    }
+
     public function updateStatus(Request $request, $id)
     {
         $booking = Booking::findOrFail($id);

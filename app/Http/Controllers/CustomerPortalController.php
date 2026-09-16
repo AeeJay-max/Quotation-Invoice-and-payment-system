@@ -303,12 +303,51 @@ class CustomerPortalController extends Controller
         ]);
 
         if ($invoice->booking) {
-            $invoice->booking->update(['status' => 'Confirmed']);
+            $invoice->booking->update(['status' => 'confirmed']);
             \App\Models\BookingStatusHistory::create([
                 'booking_id' => $invoice->booking_id,
                 'user_id'    => $user->id,
                 'status'     => 'Booking Confirmed by Exhibitor',
                 'notes'      => "Exhibitor confirmed invoice #{$invoice->invoice_number} / booking.",
+            ]);
+        } else {
+            // Generate Booking automatically from Confirmed Invoice
+            $bookingNumber = 'BOOK-' . date('Y') . '-' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+            
+            // Subtotal logic (reverse engineer from VAT and discount if needed, or just approximation)
+            $subtotal = $invoice->total;
+            if ($invoice->vat > 0) {
+                $subtotal = $invoice->total / (1 + ($invoice->vat / 100));
+            }
+            $subtotal += $invoice->discount;
+
+            $booking = \App\Models\Booking::create([
+                'booking_number' => $bookingNumber,
+                'event_id'       => $invoice->event_id,
+                'client_id'      => $invoice->client_id,
+                'user_id'        => $user->id,
+                'quotation_id'   => $invoice->quotation_id,
+                'invoice_id'     => $invoice->id,
+                'subtotal'       => $subtotal,
+                'discount'       => $invoice->discount,
+                'vat_amount'     => $invoice->vat,
+                'grand_total'    => $invoice->total,
+                'status'         => 'confirmed',
+                'payment_status' => $invoice->payment_status == 1 ? 'paid' : 'unpaid',
+                'accepted_at'    => now(),
+                'people_count'   => 1, // Default fallback
+            ]);
+
+            $invoice->update(['booking_id' => $booking->id]);
+            if ($invoice->quotation) {
+                $invoice->quotation->update(['booking_id' => $booking->id, 'status' => 'accepted']);
+            }
+
+            \App\Models\BookingStatusHistory::create([
+                'booking_id' => $booking->id,
+                'user_id'    => $user->id,
+                'status'     => 'Booking Confirmed by Exhibitor',
+                'notes'      => "Customer confirmed invoice {$invoice->invoice_number}. Booking {$booking->booking_number} generated automatically.",
             ]);
         }
 

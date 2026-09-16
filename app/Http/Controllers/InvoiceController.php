@@ -12,6 +12,8 @@ use App\Models\InvoiceItem;
 use App\Models\PaymentCurrency;
 use App\Models\PaymentStatus;
 use App\Models\PaymentType;
+use App\Models\Quotation;
+use App\Models\QuotationItem;
 use App\Models\Settings;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
@@ -98,12 +100,14 @@ class InvoiceController extends Controller
         $payment_type = PaymentType::all();
         $payment_status = PaymentStatus::all();
         $payment_currency = PaymentCurrency::all();
+        $event_spaces = \App\Models\EventSpace::all();
         return view('modules.invoice.create-invoice')->with([
             'clients' => $clients,
             'events' => $events,
             'payment_type' => $payment_type,
             'payment_status' => $payment_status,
             'payment_currency' => $payment_currency,
+            'event_spaces' => $event_spaces,
         ]);
     }
 
@@ -167,7 +171,30 @@ class InvoiceController extends Controller
 
         DB::transaction(function () use ($request, $clientIds, &$createdInvoices, &$pdfUrls) {
             foreach ($clientIds as $clientId) {
+                // Generate Invoice/Quotation Number
+                $generatedNumber = 'INV-' . date('Y') . '-' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+
+                // Generate Quotation first
+                $quotation = Quotation::create([
+                    'quotation_number' => $generatedNumber,
+                    'client_id'        => $clientId,
+                    'event_id'         => $request->event_id,
+                    'user_id'          => Auth::id(),
+                    'create_date'      => $request->create_date,
+                    'due_date'         => $request->due_date,
+                    'note'             => $request->note,
+                    'payment_type'     => $request->payment_type,
+                    'payment_status'   => $request->payment_status,
+                    'payment_currency' => $request->payment_currency,
+                    'discount'         => $request->discount ?? 0,
+                    'terms_condition'  => $request->terms_conditions,
+                    'vat'              => $request->vat ?? 0,
+                    'status'           => 'approved',
+                ]);
+
                 $invoice = Invoice::create([
+                    'invoice_number' => $generatedNumber,
+                    'quotation_id' => $quotation->id,
                     'client_id' => $clientId,
                     'event_id' => $request->event_id,
                     'user_id' => Auth::id(),
@@ -191,6 +218,12 @@ class InvoiceController extends Controller
                             'description'=> $request->description[$key],
                             'unit_price' => $request->unit_price[$key],
                         ]);
+                        QuotationItem::create([
+                            'quotation_id' => $quotation->id,
+                            'quantity'     => $request->quantity[$key],
+                            'description'  => $request->description[$key],
+                            'unit_price'   => $request->unit_price[$key],
+                        ]);
                         $subtotal += $request->quantity[$key] * $request->unit_price[$key];
                     }
                 }
@@ -212,6 +245,37 @@ class InvoiceController extends Controller
                     'amount_paid'        => $amountPaid,
                     'amount_outstanding' => $outstanding,
                 ]);
+
+                $quotation->update([
+                    'subtotal' => $subtotal,
+                    'total'    => $grandTotal,
+                ]);
+
+                // Create Booking if space allocation is provided
+                if ($request->filled('event_space_id') || $request->filled('area_sqm')) {
+                    $booking = \App\Models\Booking::create([
+                        'booking_number' => 'BKG-' . date('Y') . '-' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT),
+                        'client_id'      => $clientId,
+                        'event_id'       => $request->event_id,
+                        'event_space_id' => $request->event_space_id,
+                        'invoice_id'     => $invoice->id,
+                        'quotation_id'   => $quotation->id,
+                        'width'          => $request->width ?? 0,
+                        'length'         => $request->length ?? 0,
+                        'area_sqm'       => $request->area_sqm ?? 0,
+                        'status'         => 'accepted', // Automatically accepted since admin created it
+                        'space_cost'     => $subtotal, 
+                        'subtotal'       => $subtotal,
+                        'vat_amount'     => $vatAmount,
+                        'discount'       => $discount,
+                        'grand_total'    => $grandTotal,
+                        'payment_status' => $invoice->payment_status == 1 ? 'paid' : 'unpaid',
+                    ]);
+
+                    // Update Invoice and Quotation with booking ID
+                    $invoice->update(['booking_id' => $booking->id]);
+                    $quotation->update(['booking_id' => $booking->id]);
+                }
 
                 $this->storeInvoice($invoice);
 
@@ -258,6 +322,7 @@ class InvoiceController extends Controller
             'payment_currency' => $payment_currency,
             'invoice' => $invoice,
             'total_price' => $total,
+            'event_spaces' => \App\Models\EventSpace::all(),
         ]);
     }
 
@@ -332,6 +397,52 @@ class InvoiceController extends Controller
             'amount_paid'        => $amountPaid,
             'amount_outstanding' => $outstanding,
         ]);
+
+        // Update or Create Booking
+        if ($invoice->booking) {
+            $updateData = [
+                'event_id'       => $request->event_id,
+                'subtotal'       => $subtotal,
+                'vat_amount'     => $vatAmount,
+                'discount'       => $discount,
+                'grand_total'    => $grandTotal,
+                'payment_status' => $invoice->payment_status == 1 ? 'paid' : 'unpaid',
+            ];
+            
+            // Only update space allocation if provided
+            if ($request->filled('event_space_id') || $request->filled('area_sqm')) {
+                $updateData['event_space_id'] = $request->event_space_id;
+                $updateData['width']          = $request->width ?? 0;
+                $updateData['length']         = $request->length ?? 0;
+                $updateData['area_sqm']       = $request->area_sqm ?? 0;
+                $updateData['space_cost']     = $subtotal;
+            }
+
+            $invoice->booking->update($updateData);
+        } elseif ($request->filled('event_space_id') || $request->filled('area_sqm')) {
+            $booking = \App\Models\Booking::create([
+                'booking_number' => 'BKG-' . date('Y') . '-' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT),
+                'client_id'      => $request->client_id,
+                'event_id'       => $request->event_id,
+                'event_space_id' => $request->event_space_id,
+                'invoice_id'     => $invoice->id,
+                'quotation_id'   => $invoice->quotation_id,
+                'width'          => $request->width ?? 0,
+                'length'         => $request->length ?? 0,
+                'area_sqm'       => $request->area_sqm ?? 0,
+                'status'         => 'accepted', 
+                'space_cost'     => $subtotal, 
+                'subtotal'       => $subtotal,
+                'vat_amount'     => $vatAmount,
+                'discount'       => $discount,
+                'grand_total'    => $grandTotal,
+                'payment_status' => $invoice->payment_status == 1 ? 'paid' : 'unpaid',
+            ]);
+            $invoice->update(['booking_id' => $booking->id]);
+            if ($invoice->quotation) {
+                $invoice->quotation->update(['booking_id' => $booking->id]);
+            }
+        }
 
         return response()->json(['redirect'=>route('invoice.view', ['id'=>$invoice->id])]);
     }

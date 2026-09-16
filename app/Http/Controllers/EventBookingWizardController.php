@@ -129,8 +129,8 @@ class EventBookingWizardController extends Controller
                 $user->update(['client_id' => $client->id]);
             }
 
-            // Generate Quotation Number
-            $quotationNumber = 'QUO-' . date('Y') . '-' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+            // Generate shared Invoice/Quotation Number
+            $quotationNumber = 'INV-' . date('Y') . '-' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
 
             $quotation = Quotation::create([
                 'quotation_number' => $quotationNumber,
@@ -337,7 +337,7 @@ class EventBookingWizardController extends Controller
 
             // Generate Invoice automatically from Confirmed Booking
             if (!$booking->invoice_id) {
-                $invoiceNumber = 'INV-' . date('Y') . '-' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+                $invoiceNumber = $quotation->quotation_number;
                 $invoice = Invoice::create([
                     'invoice_number' => $invoiceNumber,
                     'event_id' => $quotation->event_id,

@@ -137,6 +137,7 @@ Route::group([], function () {
             // Admin Confirmed Bookings
             Route::get('bookings', [\App\Http\Controllers\AdminBookingController::class, 'index'])->name('bookings.index');
             Route::get('bookings/{id}', [\App\Http\Controllers\AdminBookingController::class, 'show'])->name('bookings.show');
+            Route::post('bookings/{id}/dimensions', [\App\Http\Controllers\AdminBookingController::class, 'updateDimensions'])->name('bookings.dimensions');
             Route::post('bookings/{id}/status', [\App\Http\Controllers\AdminBookingController::class, 'updateStatus'])->name('bookings.status');
             Route::post('bookings/{bookingId}/approve-attendees', [\App\Http\Controllers\AttendeeController::class, 'approveAllForBooking'])->name('bookings.approve-attendees');
 

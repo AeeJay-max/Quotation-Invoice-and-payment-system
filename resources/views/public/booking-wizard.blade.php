@@ -265,14 +265,14 @@
                         </select>
                     </div>
                     <div class="col-md-6 form-group">
-                        <label class="font-weight-bold text-success" style="font-size: 1.1rem;"><i class="fas fa-ruler-combined mr-1"></i> Requested Area (Square Meters $m^2$) *</label>
+                        <label class="font-weight-bold text-success" style="font-size: 1.1rem;"><i class="fas fa-ruler-combined mr-1"></i> Requested Area (Square Meters m²) *</label>
                         <div class="input-group">
                             <input type="number" step="0.5" min="1" id="custom_area" name="custom_area" class="form-control form-control-lg font-weight-bold text-success border-success" placeholder="e.g. 36" required>
                             <div class="input-group-append">
                                 <span class="input-group-text bg-success text-white font-weight-bold">m²</span>
                             </div>
                         </div>
-                        <small class="form-text text-muted font-weight-bold">Apply the total square meters ($m^2$) your company requires.</small>
+                        <small class="form-text text-muted font-weight-bold">Apply the total square meters (m²) your company requires.</small>
                     </div>
                     <div class="col-md-3 form-group">
                         <label>Width (Metres) <small class="text-muted">(Optional)</small></label>

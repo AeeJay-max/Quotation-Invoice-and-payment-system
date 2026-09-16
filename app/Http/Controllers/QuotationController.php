@@ -129,8 +129,10 @@ class QuotationController extends Controller
         ], ['description.*.required'=>'Description required',
             'unit_price.*.required'=>'Unit price required',
             'quantity.*.required'=>'Quantity required']);
+        $quotationNumber = 'INV-' . date('Y') . '-' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
 
         $quotation = Quotation::create([
+            'quotation_number' => $quotationNumber,
             'client_id' => $request->client_id,
             'user_id' => Auth::id(),
             'create_date' => $request->create_date,
@@ -140,7 +142,8 @@ class QuotationController extends Controller
             'payment_currency' => $request->payment_currency,
             'discount' => $request->discount ?? 0,
             'terms_condition' => $request->terms_conditions,
-            'vat' => $request->vat ?? 0
+            'vat' => $request->vat ?? 0,
+            'status' => 'approved',
         ]);
 
         foreach ($request->quantity as $key => $value) {
